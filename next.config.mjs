@@ -38,9 +38,9 @@ const nextConfig = {
   images: {
     domains: [
       'srd.fund',
-      'sanskrutcorp.com', 
-      'sanskrutenterprises.com',
-      'sandeep.com',
+      'corp.sanskrut.com', 
+      'ent.sanskrut.com',
+      'sandeepkoduri.com',
       'localhost'
     ],
     unoptimized: true,

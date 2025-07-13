@@ -27,8 +27,8 @@ export const domainConfigs: Record<string, DomainConfig> = {
       }
     `,
   },
-  "sanskrutcorp.com": {
-    domain: "sanskrutcorp.com",
+  "corp.sanskrut.in": {
+    domain: "corp.sanskrut.in",
     siteId: "sanskrut-corp",
     siteName: "Sanskrut Corp",
     primaryColor: "green",
@@ -44,8 +44,8 @@ export const domainConfigs: Record<string, DomainConfig> = {
       }
     `,
   },
-  "sanskrutenterprises.com": {
-    domain: "sanskrutenterprises.com",
+  "ent.sanskrut.in": {
+    domain: "ent.sanskrut.in",
     siteId: "sanskrut-enterprises",
     siteName: "Sanskrut Enterprises",
     primaryColor: "purple",
@@ -61,10 +61,10 @@ export const domainConfigs: Record<string, DomainConfig> = {
       }
     `,
   },
-  "sandeep.com": {
-    domain: "sandeep.com",
+  "sandeepkoduri.com": {
+    domain: "sandeepkoduri.com",
     siteId: "sandeep",
-    siteName: "Sandeep - Technology Leader",
+    siteName: "Sandeep Koduri - Technology Leader",
     primaryColor: "orange",
     secondaryColor: "amber",
     favicon: "/favicons/sandeep-favicon.ico",
@@ -111,34 +111,34 @@ export const siteIdConfigs: Record<string, DomainConfig> = {
     customCSS: domainConfigs["srd.fund"].customCSS,
   },
   "sanskrut-corp": {
-    domain: "sanskrutcorp.com",
+    domain: "corp.sanskrut.in",
     siteId: "sanskrut-corp",
     siteName: "Sanskrut Corp",
     primaryColor: "green",
     secondaryColor: "emerald",
     favicon: "/favicons/sanskrut-corp-favicon.ico",
     ogImage: "/og-images/sanskrut-corp-og.png",
-    customCSS: domainConfigs["sanskrutcorp.com"].customCSS,
+    customCSS: domainConfigs["corp.sanskrut.in"].customCSS,
   },
   "sanskrut-enterprises": {
-    domain: "sanskrutenterprises.com",
+    domain: "ent.sanskrut.in",
     siteId: "sanskrut-enterprises",
     siteName: "Sanskrut Enterprises",
     primaryColor: "purple",
     secondaryColor: "violet",
     favicon: "/favicons/sanskrut-enterprises-favicon.ico",
     ogImage: "/og-images/sanskrut-enterprises-og.png",
-    customCSS: domainConfigs["sanskrutenterprises.com"].customCSS,
+    customCSS: domainConfigs["ent.sanskrut.in"].customCSS,
   },
   sandeep: {
-    domain: "sandeep.com",
+    domain: "sandeepkoduri.com",
     siteId: "sandeep",
-    siteName: "Sandeep - Technology Leader",
+    siteName: "Sandeep Koduri - Technology Leader",
     primaryColor: "orange",
     secondaryColor: "amber",
     favicon: "/favicons/sandeep-favicon.ico",
     ogImage: "/og-images/sandeep-og.png",
-    customCSS: domainConfigs["sandeep.com"].customCSS,
+    customCSS: domainConfigs["sandeepkoduri.com"].customCSS,
   },
   selector: {
     domain: "localhost:3000",

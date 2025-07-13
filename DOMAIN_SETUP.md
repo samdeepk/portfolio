@@ -9,17 +9,17 @@ This guide explains how to set up custom domains for each site in the portfolio 
 - **Primary Color**: Blue (#3B82F6)
 - **Features**: Investment timeline, portfolio metrics, project details
 
-### 2. Sanskrut Corp - `sanskrutcorp.com`
+### 2. Sanskrut Corp - `corp.sanskrut.in`
 - **Purpose**: Incubation platform and early-stage ventures
 - **Primary Color**: Green (#10B981)
 - **Features**: Project timeline, incubation metrics, status tracking
 
-### 3. Sanskrut Enterprises - `sanskrutenterprises.com`
+### 3. Sanskrut Enterprises - `ent.sanskrut.in`
 - **Purpose**: Hospitality and real estate portfolio
 - **Primary Color**: Purple (#8B5CF6)
 - **Features**: Property portfolio, location mapping, ownership details
 
-### 4. Sandeep Personal - `sandeep.com`
+### 4. Sandeep Personal - `sandeepkoduri.com`
 - **Purpose**: Personal portfolio and professional timeline
 - **Primary Color**: Orange (#F97316)
 - **Features**: Career timeline, cross-company integration, contact information
@@ -32,12 +32,12 @@ This guide explains how to set up custom domains for each site in the portfolio 
    \`\`\`
    srd.fund
    www.srd.fund
-   sanskrutcorp.com
-   www.sanskrutcorp.com
-   sanskrutenterprises.com
-   www.sanskrutenterprises.com
-   sandeep.com
-   www.sandeep.com
+   corp.sanskrut.in
+   www.corp.sanskrut.in
+   ent.sanskrut.in
+   www.ent.sanskrut.in
+   sandeepkoduri.com
+   www.sandeepkoduri.com
    \`\`\`
 
 2. **DNS Records (Add to your domain registrar):**
@@ -70,9 +70,9 @@ Set these environment variables for production:
 
 \`\`\`env
 NEXT_PUBLIC_DOMAIN_SRD=srd.fund
-NEXT_PUBLIC_DOMAIN_SANSKRUT_CORP=sanskrutcorp.com
-NEXT_PUBLIC_DOMAIN_SANSKRUT_ENTERPRISES=sanskrutenterprises.com
-NEXT_PUBLIC_DOMAIN_SANDEEP=sandeep.com
+NEXT_PUBLIC_DOMAIN_SANSKRUT_CORP=corp.sanskrut.in
+NEXT_PUBLIC_DOMAIN_SANSKRUT_ENTERPRISES=ent.sanskrut.in
+NEXT_PUBLIC_DOMAIN_SANDEEP=sandeepkoduri.com
 \`\`\`
 
 ## SSL Certificates

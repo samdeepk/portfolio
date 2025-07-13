@@ -4,7 +4,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Building, TrendingUp, Home, User, ExternalLink, Globe, LinkIcon, Copy, Code } from "lucide-react"
+import { TrendingUp, Home, User, ExternalLink, Globe, LinkIcon, Copy, Code } from "lucide-react"
 import Link from "next/link"
 import { sites } from "@/lib/shared-data"
 import { useState, useEffect } from "react"
@@ -34,8 +34,8 @@ export function SiteSelector() {
       icon: Code,
       projects: 3,
       highlight: "Active: 2013-2021",
-      domain: "sanskrutcorp.com",
-      url: "https://sanskrutcorp.com",
+      domain: "corp.sanskrut.in",
+      url: "https://corp.sanskrut.in",
       paramUrl: "/?site=sanskrut-corp",
     },
     {
@@ -43,8 +43,8 @@ export function SiteSelector() {
       icon: Home,
       projects: 4,
       highlight: "Portfolio Value: $2M+",
-      domain: "sanskrutenterprises.com",
-      url: "https://sanskrutenterprises.com",
+      domain: "ent.sanskrut.in",
+      url: "https://ent.sanskrut.in",
       paramUrl: "/?site=sanskrut-enterprises",
     },
     {
@@ -52,8 +52,8 @@ export function SiteSelector() {
       icon: User,
       projects: 15,
       highlight: "15+ Years Experience",
-      domain: "sandeep.com",
-      url: "https://sandeep.com",
+      domain: "sandeepkoduri.com",
+      url: "https://sandeepkoduri.com",
       paramUrl: "/?site=sandeep",
     },
   ]
@@ -223,15 +223,15 @@ export function SiteSelector() {
                       <span className="text-muted-foreground">→ Investment Fund</span>
                     </div>
                     <div className="flex items-center justify-between p-2 bg-white/50 rounded">
-                      <span className="font-mono">sanskrutcorp.com</span>
+                      <span className="font-mono">corp.sanskrut.in</span>
                       <span className="text-muted-foreground">→ Incubation</span>
                     </div>
                     <div className="flex items-center justify-between p-2 bg-white/50 rounded">
-                      <span className="font-mono">sanskrutenterprises.com</span>
+                      <span className="font-mono">ent.sanskrut.in</span>
                       <span className="text-muted-foreground">→ Hospitality</span>
                     </div>
                     <div className="flex items-center justify-between p-2 bg-white/50 rounded">
-                      <span className="font-mono">sandeep.com</span>
+                      <span className="font-mono">sandeepkoduri.com</span>
                       <span className="text-muted-foreground">→ Personal</span>
                     </div>
                   </div>

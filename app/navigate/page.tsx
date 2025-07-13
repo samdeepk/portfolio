@@ -18,8 +18,8 @@ export default function NavigatePage() {
       icon: <Globe className="h-4 w-4" />,
       items: [
         { input: "srd.fund", description: "Direct domain access to SRD Innovation Fund" },
-        { input: "sanskrutcorp.com", description: "Sanskrut Corp incubation platform" },
-        { input: "sandeep.com", description: "Personal portfolio and timeline" },
+        { input: "corp.sanskrut.in", description: "Sanskrut Corp incubation platform" },
+        { input: "sandeepkoduri.com", description: "Personal portfolio and timeline" },
       ],
     },
     {

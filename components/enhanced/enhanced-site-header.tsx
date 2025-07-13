@@ -52,9 +52,9 @@ export function EnhancedSiteHeader({ site, showBreadcrumbs = true, showNavigator
 
   const siteUrls = {
     srd: { domain: "https://srd.fund", param: "/?site=srd" },
-    "sanskrut-corp": { domain: "https://sanskrutcorp.com", param: "/?site=sanskrut-corp" },
-    "sanskrut-enterprises": { domain: "https://sanskrutenterprises.com", param: "/?site=sanskrut-enterprises" },
-    sandeep: { domain: "https://sandeep.com", param: "/?site=sandeep" },
+    "sanskrut-corp": { domain: "https://corp.sanskrut.in", param: "/?site=sanskrut-corp" },
+    "sanskrut-enterprises": { domain: "https://ent.sanskrut.in", param: "/?site=sanskrut-enterprises" },
+    sandeep: { domain: "https://sandeepkoduri.com", param: "/?site=sandeep" },
   }
 
   return (
@@ -156,19 +156,19 @@ export function EnhancedSiteHeader({ site, showBreadcrumbs = true, showNavigator
                   </a>
                 </Button>
                 <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-colors">
-                  <a href="https://sanskrutcorp.com" target="_blank" rel="noopener noreferrer">
+                  <a href="https://corp.sanskrut.in" target="_blank" rel="noopener noreferrer">
                     Corp
                     <ExternalLink className="ml-1 h-3 w-3" />
                   </a>
                 </Button>
                 <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-colors">
-                  <a href="https://sanskrutenterprises.com" target="_blank" rel="noopener noreferrer">
+                  <a href="https://ent.sanskrut.in" target="_blank" rel="noopener noreferrer">
                     Enterprises
                     <ExternalLink className="ml-1 h-3 w-3" />
                   </a>
                 </Button>
                 <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-colors">
-                  <a href="https://sandeep.com" target="_blank" rel="noopener noreferrer">
+                  <a href="https://sandeepkoduri.com" target="_blank" rel="noopener noreferrer">
                     Sandeep
                     <ExternalLink className="ml-1 h-3 w-3" />
                   </a>

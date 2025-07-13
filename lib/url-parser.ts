@@ -18,17 +18,17 @@ const KNOWN_DOMAINS = {
     siteId: "srd",
     description: "Investment portfolio and startup showcase",
   },
-  "sanskrutcorp.com": {
+  "corp.sanskrut.in": {
     name: "Sanskrut Corp",
     siteId: "sanskrut-corp",
     description: "Incubation platform and early-stage ventures",
   },
-  "sanskrutenterprises.com": {
+  "ent.sanskrut.in": {
     name: "Sanskrut Enterprises",
     siteId: "sanskrut-enterprises",
     description: "Hospitality and real estate portfolio",
   },
-  "sandeep.com": {
+  "sandeepkoduri.com": {
     name: "Sandeep",
     siteId: "sandeep",
     description: "Personal portfolio and professional timeline",

@@ -5,6 +5,6 @@ Allow: /
 
 # Sitemaps for each domain
 Sitemap: https://srd.fund/sitemap.xml
-Sitemap: https://sanskrutcorp.com/sitemap.xml
-Sitemap: https://sanskrutenterprises.com/sitemap.xml
-Sitemap: https://sandeep.com/sitemap.xml
+Sitemap: https://corp.sanskrut.in/sitemap.xml
+Sitemap: https://ent.sanskrut.in/sitemap.xml
+Sitemap: https://sandeepkoduri.com/sitemap.xml

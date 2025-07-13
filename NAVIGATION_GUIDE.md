@@ -8,9 +8,9 @@ This guide explains how each site can be accessed via both custom domains and UR
 Each site has its own professional domain:
 
 - **SRD Innovation Fund**: `https://srd.fund`
-- **Sanskrut Corp**: `https://sanskrutcorp.com`
-- **Sanskrut Enterprises**: `https://sanskrutenterprises.com`
-- **Sandeep Personal**: `https://sandeep.com`
+- **Sanskrut Corp**: `https://corp.sanskrut.in`
+- **Sanskrut Enterprises**: `https://ent.sanskrut.in`
+- **Sandeep Personal**: `https://sandeepkoduri.com`
 
 ### Method 2: URL Parameters (Universal)
 Access any site from any domain using URL parameters:
@@ -26,7 +26,7 @@ Access any site from any domain using URL parameters:
 ### From Any Domain:
 \`\`\`
 https://srd.fund/?site=sandeep          → Shows Sandeep's site on SRD domain
-https://sandeep.com/?site=srd           → Shows SRD site on Sandeep's domain
+https://sandeepkoduri.com/?site=srd           → Shows SRD site on Sandeep's domain
 https://localhost:3000/?site=srd        → Shows SRD site in development
 \`\`\`
 
@@ -34,7 +34,7 @@ https://localhost:3000/?site=srd        → Shows SRD site in development
 \`\`\`
 Current: https://srd.fund
 Link to: /?site=sanskrut-corp           → Switches to Sanskrut Corp
-Link to: https://sanskrutcorp.com       → Opens Sanskrut Corp in new tab
+Link to: https://corp.sanskrut.in       → Opens Sanskrut Corp in new tab
 \`\`\`
 
 ## 🎯 Use Cases

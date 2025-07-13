@@ -60,9 +60,9 @@ export function UrlInputHandler({ onNavigate, className }: UrlInputHandlerProps)
 
     const commonSites = [
       "srd.fund",
-      "sanskrutcorp.com",
-      "sanskrutenterprises.com",
-      "sandeep.com",
+      "corp.sanskrut.in",
+      "ent.sanskrut.in",
+      "sandeepkoduri.com",
       "/?site=srd",
       "/?site=sanskrut-corp",
       "/?site=sanskrut-enterprises",
@@ -367,7 +367,7 @@ export function UrlInputHandler({ onNavigate, className }: UrlInputHandlerProps)
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             {[
               { label: "SRD Fund", value: "srd.fund", type: "domain" },
-              { label: "Sanskrut Corp", value: "sanskrutcorp.com", type: "domain" },
+              { label: "Sanskrut Corp", value: "corp.sanskrut.in", type: "domain" },
               { label: "SpaceX Profile", value: "/profile/spacex", type: "path" },
               { label: "Sandeep's Page", value: "/?site=sandeep", type: "parameter" },
             ].map((item, index) => (
