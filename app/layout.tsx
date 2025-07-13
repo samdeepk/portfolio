@@ -12,7 +12,7 @@ const inter = Inter({ subsets: ["latin"] })
 export async function generateMetadata({ searchParams }: { searchParams: { site?: string } }): Promise<Metadata> {
   const headersList = await headers()
   const host = headersList.get("host") || "localhost:3000"
-  const config = getActiveConfig(host, searchParams.site)
+  const config = getActiveConfig(host, searchParams?.site)
 
   return {
     title: config.siteName,
