@@ -1,3 +1,4 @@
+
 export interface ParsedUrlResult {
   isValid: boolean
   type: "domain" | "path" | "parameter" | "site-id" | "external" | "invalid"
@@ -246,16 +247,15 @@ export function parseUrlInput(input: string): ParsedUrlResult {
 
 // Helper functions
 function isValidUrl(string: string): boolean {
+  // A more strict check for a full URL
+  if (!string.startsWith("http://") && !string.startsWith("https://")) {
+    return false
+  }
   try {
     new URL(string)
     return true
   } catch {
-    try {
-      new URL(`https://${string}`)
-      return string.includes(".")
-    } catch {
-      return false
-    }
+    return false
   }
 }
 
