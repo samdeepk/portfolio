@@ -130,16 +130,7 @@ export const siteIdConfigs: Record<string, DomainConfig> = {
     ogImage: "/og-images/sanskrut-enterprises-og.png",
     customCSS: domainConfigs["ent.sanskrut.in"].customCSS,
   },
-  sandeep: {
-    domain: "sandeepkoduri.com",
-    siteId: "sandeep",
-    siteName: "Sandeep Koduri - Technology Leader",
-    primaryColor: "orange",
-    secondaryColor: "amber",
-    favicon: "/favicons/sandeep-favicon.ico",
-    ogImage: "/og-images/sandeep-og.png",
-    customCSS: domainConfigs["sandeepkoduri.com"].customCSS,
-  },
+  sandeep: domainConfigs["sandeepkoduri.com"],
   selector: {
     domain: "localhost:3000",
     siteId: "selector",
