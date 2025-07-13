@@ -7,12 +7,17 @@ import { Badge } from "@/components/ui/badge"
 import { Building, TrendingUp, Home, User, ExternalLink, Globe, LinkIcon, Copy, Code } from "lucide-react"
 import Link from "next/link"
 import { sites } from "@/lib/shared-data"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 
 export function SiteSelector() {
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null)
   const { toast } = useToast()
+  const [origin, setOrigin] = useState("")
+
+  useEffect(() => {
+    setOrigin(window.location.origin)
+  }, [])
 
   const siteConfigs = [
     {
@@ -165,11 +170,12 @@ export function SiteSelector() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => copyToClipboard(window.location.origin + site.paramUrl, "Parameter")}
+                            onClick={() => copyToClipboard(origin + site.paramUrl, "Parameter")}
                             className="h-8 w-8 p-0"
+                            disabled={!origin}
                           >
                             <Copy
-                              className={`h-3 w-3 ${copiedUrl === (window.location.origin + site.paramUrl) ? "text-green-600" : ""}`}
+                              className={`h-3 w-3 ${copiedUrl === origin + site.paramUrl ? "text-green-600" : ""}`}
                             />
                           </Button>
                           <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0">
