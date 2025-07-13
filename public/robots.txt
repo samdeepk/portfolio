@@ -1,0 +1,10 @@
+# Robots.txt for all domains
+
+User-agent: *
+Allow: /
+
+# Sitemaps for each domain
+Sitemap: https://srd.fund/sitemap.xml
+Sitemap: https://sanskrutcorp.com/sitemap.xml
+Sitemap: https://sanskrutenterprises.com/sitemap.xml
+Sitemap: https://sandeep.com/sitemap.xml
