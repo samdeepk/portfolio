@@ -32,6 +32,7 @@ export async function generateMetadata({ searchParams }: { searchParams: { site?
       description: `${config.siteName} - Professional portfolio and business showcase`,
       images: [config.ogImage],
     },
+    generator: "v0.dev"
   }
 }
 
@@ -57,7 +58,3 @@ export default async function RootLayout({
     </html>
   )
 }
-
-export const metadata = {
-      generator: 'v0.dev'
-    };
