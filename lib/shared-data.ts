@@ -1,3 +1,4 @@
+
 export interface Project {
   id: string
   name: string
@@ -29,17 +30,17 @@ export const sites: Record<string, Site> = {
     id: "srd",
     name: "SRD Innovation Fund",
     title: "Investing in Tomorrow's Breakthroughs",
-    description: "Private equity investments in innovation-focused startups and breakthrough technologies",
-    theme: "Investments & Innovation",
+    description: "Showcasing high-value private equity investments in innovative, high-growth startups.",
+    theme: "Startup Investments",
     primaryColor: "blue",
     secondaryColor: "indigo",
   },
   sanskrut_corp: {
     id: "sanskrut_corp",
     name: "Sanskrut Corp",
-    title: "Incubating the Future",
-    description: "Supporting early-stage ventures and foundational business experiences",
-    theme: "Incubation Platform",
+    title: "Software Consulting & Incubation",
+    description: "Expert software consulting services and a platform for incubating early-stage technology ventures.",
+    theme: "Software Consulting",
     primaryColor: "green",
     secondaryColor: "emerald",
   },
@@ -47,8 +48,8 @@ export const sites: Record<string, Site> = {
     id: "sanskrut_enterprises",
     name: "Sanskrut Enterprises",
     title: "Hospitality & Real Estate Excellence",
-    description: "Premium hospitality investments and strategic property portfolio",
-    theme: "Hospitality & Real Estate",
+    description: "A curated portfolio of strategic hospitality investments and premium real estate properties.",
+    theme: "Hospitality Investments",
     primaryColor: "purple",
     secondaryColor: "violet",
   },
@@ -56,7 +57,7 @@ export const sites: Record<string, Site> = {
     id: "sandeep",
     name: "Sandeep",
     title: "Technology Leader & Strategic Investor",
-    description: "Bridging innovation, investment, and operational excellence",
+    description: "Bridging innovation, investment, and operational excellence across a diverse portfolio.",
     theme: "Personal Portfolio & Timeline",
     primaryColor: "orange",
     secondaryColor: "amber",

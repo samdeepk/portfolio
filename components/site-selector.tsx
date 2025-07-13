@@ -1,9 +1,10 @@
+
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Building, TrendingUp, Home, User, ExternalLink, Globe, LinkIcon, Copy } from "lucide-react"
+import { Building, TrendingUp, Home, User, ExternalLink, Globe, LinkIcon, Copy, Code } from "lucide-react"
 import Link from "next/link"
 import { sites } from "@/lib/shared-data"
 import { useState } from "react"
@@ -25,7 +26,7 @@ export function SiteSelector() {
     },
     {
       ...sites.sanskrut_corp,
-      icon: Building,
+      icon: Code,
       projects: 3,
       highlight: "Active: 2013-2021",
       domain: "sanskrutcorp.com",

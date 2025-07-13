@@ -1,10 +1,11 @@
+
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Building, MapPin, ExternalLink } from "lucide-react"
+import { Building, MapPin, ExternalLink, Code } from "lucide-react"
 import { sites, sanskrutCorpProjects } from "@/lib/shared-data"
 import { SiteHeader } from "@/components/shared/site-header"
 import { ProjectTimeline } from "@/components/shared/project-timeline"
@@ -23,7 +24,7 @@ export function SanskrutCorpSite() {
         {/* Hero Section */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-4">
-            <Building className="h-12 w-12 text-green-600 mr-4" />
+            <Code className="h-12 w-12 text-green-600 mr-4" />
             <h1 className="text-5xl font-bold text-green-900 dark:text-green-100">{site.name}</h1>
           </div>
           <p className="text-xl text-green-700 dark:text-green-300 mb-6">{site.title}</p>
