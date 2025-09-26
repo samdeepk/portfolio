@@ -1,9 +1,10 @@
 "use client"
 
-import { createContext, useContext, type ReactNode } from "react"
-import type { DomainConfig } from "@/lib/domain-config"
+import type React from "react"
+import { createContext, useContext } from "react"
 
-interface DomainContextType {
+interface DomainConfig {
+  domain: string
   siteId: string
   siteName: string
   primaryColor: string
@@ -13,53 +14,29 @@ interface DomainContextType {
   customCSS?: string
 }
 
-const DomainContext = createContext<DomainContextType | null>(null)
+const defaultConfig: DomainConfig = {
+  domain: "localhost:3000",
+  siteId: "selector",
+  siteName: "Portfolio Ecosystem",
+  primaryColor: "blue",
+  secondaryColor: "indigo",
+  favicon: "/favicon.ico",
+  ogImage: "/og-image.png",
+}
 
-interface DomainProviderProps {
-  children: ReactNode
+const DomainContext = createContext<DomainConfig>(defaultConfig)
+
+export function DomainProvider({
+  children,
+  config = defaultConfig,
+}: {
+  children: React.ReactNode
   config?: DomainConfig
+}) {
+  return <DomainContext.Provider value={config}>{children}</DomainContext.Provider>
 }
 
-export function DomainProvider({ children, config }: DomainProviderProps) {
-  // Provide default config if none is provided
-  const defaultConfig: DomainContextType = {
-    siteId: "selector",
-    siteName: "Portfolio Ecosystem",
-    primaryColor: "slate",
-    secondaryColor: "gray",
-    favicon: "/favicon.ico",
-    ogImage: "/og-image.png",
-  }
-
-  const contextValue = config
-    ? {
-        siteId: config.siteId,
-        siteName: config.siteName,
-        primaryColor: config.primaryColor,
-        secondaryColor: config.secondaryColor,
-        favicon: config.favicon,
-        ogImage: config.ogImage,
-        customCSS: config.customCSS,
-      }
-    : defaultConfig
-
-  return <DomainContext.Provider value={contextValue}>{children}</DomainContext.Provider>
-}
-
-export function useDomain(): DomainContextType {
+export function useDomain() {
   const context = useContext(DomainContext)
-
-  // Return default config if context is not available
-  if (!context) {
-    return {
-      siteId: "selector",
-      siteName: "Portfolio Ecosystem",
-      primaryColor: "slate",
-      secondaryColor: "gray",
-      favicon: "/favicon.ico",
-      ogImage: "/og-image.png",
-    }
-  }
-
-  return context
+  return context || defaultConfig
 }
