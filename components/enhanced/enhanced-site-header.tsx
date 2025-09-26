@@ -51,8 +51,8 @@ export function EnhancedSiteHeader({ site }: EnhancedSiteHeaderProps) {
 
   const siteUrls = {
     srd: { domain: "https://srd.fund", param: "/?site=srd" },
-    "sanskrut-corp": { domain: "https://sanskrutcorp.com", param: "/?site=sanskrut-corp" },
-    "sanskrut-enterprises": { domain: "https://sanskrutenterprises.com", param: "/?site=sanskrut-enterprises" },
+    "sanskrut-corp": { domain: "https://corp.sanskrut.in", param: "/?site=sanskrut-corp" },
+    "sanskrut-enterprises": { domain: "https://ent.sanskrut.in", param: "/?site=sanskrut-enterprises" },
     sandeep: { domain: "https://sandeepkoduri.com", param: "/?site=sandeep" },
   }
 
@@ -64,7 +64,7 @@ export function EnhancedSiteHeader({ site }: EnhancedSiteHeaderProps) {
             <div className="flex items-center space-x-4">
               {showAllSitesLink ? (
                 <Link href="/">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" className="hover:bg-primary/10 transition-colors">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     All Sites
                   </Button>
@@ -76,24 +76,29 @@ export function EnhancedSiteHeader({ site }: EnhancedSiteHeaderProps) {
                   </div>
                   <div className="flex items-center gap-2">
                     {isParameterAccess && (
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className="text-xs animate-in slide-in-from-left duration-300">
                         <LinkIcon className="h-3 w-3 mr-1" />
                         Parameter
                       </Badge>
                     )}
                     {isDomainAccess && (
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className="text-xs animate-in slide-in-from-left duration-300">
                         <Globe className="h-3 w-3 mr-1" />
                         Domain
                       </Badge>
                     )}
-                    <span className="text-sm text-muted-foreground">{domainConfig.domain}</span>
+                    <span className="text-sm text-muted-foreground font-mono">{domainConfig.domain}</span>
                   </div>
                 </div>
               )}
+
               <div className="flex items-center space-x-3">
-                <h1 className="text-xl font-bold">{site.name}</h1>
-                <Badge variant="secondary">{site.theme}</Badge>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                  {site.name}
+                </h1>
+                <Badge variant="secondary" className="animate-in slide-in-from-right duration-300">
+                  {site.theme}
+                </Badge>
               </div>
             </div>
 
@@ -103,16 +108,21 @@ export function EnhancedSiteHeader({ site }: EnhancedSiteHeaderProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowNavigator(!showNavigator)}
-                className="hidden md:flex"
+                className="hidden md:flex hover:bg-primary/10 transition-colors"
               >
                 <Navigation className="h-4 w-4 mr-2" />
                 Navigate
               </Button>
 
-              {/* Access Method Toggle */}
+              {/* Access Method Controls */}
               {!showAllSitesLink && (
-                <div className="hidden md:flex items-center space-x-1 mr-4">
-                  <Button variant="ghost" size="sm" onClick={copyCurrentUrl} className="text-xs">
+                <div className="hidden lg:flex items-center space-x-1 mr-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={copyCurrentUrl}
+                    className="text-xs hover:bg-primary/10 transition-colors"
+                  >
                     <Copy className={`h-3 w-3 mr-1 ${copiedUrl === window.location.href ? "text-green-600" : ""}`} />
                     Copy URL
                   </Button>
@@ -121,7 +131,7 @@ export function EnhancedSiteHeader({ site }: EnhancedSiteHeaderProps) {
                   {site.id in siteUrls && (
                     <>
                       {isParameterAccess ? (
-                        <Button variant="ghost" size="sm" asChild>
+                        <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-colors">
                           <a
                             href={siteUrls[site.id as keyof typeof siteUrls].domain}
                             target="_blank"
@@ -132,7 +142,7 @@ export function EnhancedSiteHeader({ site }: EnhancedSiteHeaderProps) {
                           </a>
                         </Button>
                       ) : (
-                        <Button variant="ghost" size="sm" asChild>
+                        <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-colors">
                           <Link href={siteUrls[site.id as keyof typeof siteUrls].param}>
                             <LinkIcon className="h-3 w-3 mr-1" />
                             Parameter
@@ -144,28 +154,28 @@ export function EnhancedSiteHeader({ site }: EnhancedSiteHeaderProps) {
                 </div>
               )}
 
-              {/* Cross-site navigation for custom domains */}
+              {/* Cross-site navigation */}
               {!showAllSitesLink && (
-                <div className="hidden lg:flex items-center space-x-1 mr-4">
-                  <Button variant="ghost" size="sm" asChild>
+                <div className="hidden xl:flex items-center space-x-1 mr-2">
+                  <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-colors">
                     <a href="https://srd.fund" target="_blank" rel="noopener noreferrer">
                       SRD
                       <ExternalLink className="ml-1 h-3 w-3" />
                     </a>
                   </Button>
-                  <Button variant="ghost" size="sm" asChild>
-                    <a href="https://sanskrutcorp.com" target="_blank" rel="noopener noreferrer">
+                  <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-colors">
+                    <a href="https://corp.sanskrut.in" target="_blank" rel="noopener noreferrer">
                       Corp
                       <ExternalLink className="ml-1 h-3 w-3" />
                     </a>
                   </Button>
-                  <Button variant="ghost" size="sm" asChild>
-                    <a href="https://sanskrutenterprises.com" target="_blank" rel="noopener noreferrer">
+                  <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-colors">
+                    <a href="https://ent.sanskrut.in" target="_blank" rel="noopener noreferrer">
                       Enterprises
                       <ExternalLink className="ml-1 h-3 w-3" />
                     </a>
                   </Button>
-                  <Button variant="ghost" size="sm" asChild>
+                  <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-colors">
                     <a href="https://sandeepkoduri.com" target="_blank" rel="noopener noreferrer">
                       Sandeep
                       <ExternalLink className="ml-1 h-3 w-3" />
@@ -174,14 +184,20 @@ export function EnhancedSiteHeader({ site }: EnhancedSiteHeaderProps) {
                 </div>
               )}
 
-              <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+              {/* Theme toggle */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="hover:bg-primary/10 transition-colors"
+              >
                 {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
             </div>
           </div>
 
-          {/* Smart Breadcrumb */}
-          <div className="mt-2">
+          {/* Breadcrumbs */}
+          <div className="mt-2 border-t pt-2">
             <SmartBreadcrumb site={site} />
           </div>
         </div>
@@ -189,7 +205,7 @@ export function EnhancedSiteHeader({ site }: EnhancedSiteHeaderProps) {
 
       {/* URL Navigator Widget */}
       {showNavigator && (
-        <div className="border-b bg-muted/50 p-4">
+        <div className="border-b bg-muted/50 p-4 animate-in slide-in-from-top duration-200">
           <URLNavigatorWidget onClose={() => setShowNavigator(false)} />
         </div>
       )}

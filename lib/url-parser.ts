@@ -1,27 +1,19 @@
-interface ParseResult {
-  isValid: boolean
-  destination: string
-  finalUrl?: string
-  isExternal: boolean
+export interface ParsedURL {
+  input: string
   type: "domain" | "parameter" | "path" | "external" | "unknown"
+  isValid: boolean
+  isExternal: boolean
+  destination: string
+  finalUrl: string
+  error?: string
   suggestions?: string[]
+  confidence?: number
   metadata?: {
     site?: string
     domain?: string
     path?: string
   }
 }
-
-const KNOWN_SITES = {
-  srd: { domain: "srd.fund", name: "SRD Fund" },
-  "sanskrut-corp": { domain: "sanskrutcorp.com", name: "Sanskrut Corp" },
-  "sanskrut-enterprises": { domain: "sanskrutenterprises.com", name: "Sanskrut Enterprises" },
-  sandeep: { domain: "sandeepkoduri.com", name: "Sandeep Koduri" },
-}
-
-const KNOWN_DOMAINS = ["srd.fund", "sanskrutcorp.com", "sanskrutenterprises.com", "sandeepkoduri.com"]
-
-const KNOWN_PATHS = ["/profile/spacex", "/profile/groq", "/profile/tesla", "/person/sandeep", "/navigate"]
 
 // Levenshtein distance for fuzzy matching
 function levenshteinDistance(str1: string, str2: string): number {
@@ -48,153 +40,151 @@ function levenshteinDistance(str1: string, str2: string): number {
   return matrix[str2.length][str1.length]
 }
 
-function findSuggestions(input: string): string[] {
-  const suggestions: Array<{ text: string; distance: number }> = []
-
-  // Check against known sites
-  Object.keys(KNOWN_SITES).forEach((siteId) => {
-    const distance = levenshteinDistance(input.toLowerCase(), siteId)
-    if (distance <= 2) {
-      suggestions.push({ text: siteId, distance })
-    }
-  })
-
-  // Check against known domains
-  KNOWN_DOMAINS.forEach((domain) => {
-    const distance = levenshteinDistance(input.toLowerCase(), domain)
-    if (distance <= 3) {
-      suggestions.push({ text: domain, distance })
-    }
-  })
-
-  // Check against known paths
-  KNOWN_PATHS.forEach((path) => {
-    const distance = levenshteinDistance(input.toLowerCase(), path)
-    if (distance <= 3) {
-      suggestions.push({ text: path, distance })
-    }
-  })
-
-  return suggestions
-    .sort((a, b) => a.distance - b.distance)
-    .slice(0, 3)
-    .map((s) => s.text)
+// Known sites and their configurations
+const KNOWN_SITES = {
+  srd: {
+    domain: "srd.fund",
+    name: "SRD Fund",
+    aliases: ["srd", "srd.fund", "srdfund"],
+  },
+  "sanskrut-corp": {
+    domain: "corp.sanskrut.in",
+    name: "Sanskrut Corp",
+    aliases: ["sanskrut-corp", "corp", "sanskrutcorp", "corp.sanskrut.in"],
+  },
+  "sanskrut-enterprises": {
+    domain: "ent.sanskrut.in",
+    name: "Sanskrut Enterprises",
+    aliases: ["sanskrut-enterprises", "enterprises", "ent", "ent.sanskrut.in"],
+  },
+  sandeep: {
+    domain: "sandeepkoduri.com",
+    name: "Sandeep Koduri",
+    aliases: ["sandeep", "sandeepkoduri", "sandeepkoduri.com"],
+  },
 }
 
-export function parseURL(input: string): ParseResult {
+// Known internal paths
+const KNOWN_PATHS = ["/profile/spacex", "/profile/groq", "/profile/openai", "/person/sandeep", "/navigate"]
+
+export function parseURL(input: string): ParsedURL {
   const trimmedInput = input.trim().toLowerCase()
 
-  // Handle empty input
   if (!trimmedInput) {
     return {
-      isValid: false,
-      destination: "Empty input",
-      isExternal: false,
+      input,
       type: "unknown",
-      suggestions: ["srd.fund", "/?site=srd", "/profile/spacex"],
+      isValid: false,
+      isExternal: false,
+      destination: "",
+      finalUrl: "",
+      error: "Please enter a URL or site identifier",
     }
   }
 
-  // Handle full URLs (external)
+  // Check for external URLs
   if (trimmedInput.startsWith("http://") || trimmedInput.startsWith("https://")) {
     try {
       const url = new URL(trimmedInput)
       return {
+        input,
+        type: "external",
         isValid: true,
+        isExternal: true,
         destination: url.hostname,
         finalUrl: trimmedInput,
-        isExternal: true,
+        confidence: 1.0,
+        metadata: { domain: url.hostname },
+      }
+    } catch (e) {
+      return {
+        input,
         type: "external",
-        metadata: { domain: url.hostname, path: url.pathname },
-      }
-    } catch {
-      return {
         isValid: false,
-        destination: "Invalid URL",
-        isExternal: false,
-        type: "unknown",
-        suggestions: findSuggestions(input),
-      }
-    }
-  }
-
-  // Handle domain-like inputs
-  if (trimmedInput.includes(".") && !trimmedInput.startsWith("/") && !trimmedInput.includes("?")) {
-    const domain = trimmedInput.replace(/^(https?:\/\/)/, "")
-
-    if (KNOWN_DOMAINS.includes(domain)) {
-      return {
-        isValid: true,
-        destination: domain,
-        finalUrl: `https://${domain}`,
         isExternal: true,
+        destination: "",
+        finalUrl: "",
+        error: "Invalid URL format",
+      }
+    }
+  }
+
+  // Check for direct domain matches
+  for (const [siteId, config] of Object.entries(KNOWN_SITES)) {
+    if (config.aliases.includes(trimmedInput)) {
+      const confidence = trimmedInput === config.domain ? 1.0 : 0.9
+      return {
+        input,
         type: "domain",
-        metadata: { domain },
-      }
-    }
-
-    // Try as external domain
-    return {
-      isValid: true,
-      destination: domain,
-      finalUrl: `https://${domain}`,
-      isExternal: true,
-      type: "external",
-      metadata: { domain },
-    }
-  }
-
-  // Handle parameter-style inputs
-  if (trimmedInput.includes("?site=") || trimmedInput.startsWith("site=")) {
-    const siteMatch = trimmedInput.match(/site=([^&]+)/)
-    if (siteMatch) {
-      const siteId = siteMatch[1]
-      if (siteId in KNOWN_SITES) {
-        return {
-          isValid: true,
-          destination: KNOWN_SITES[siteId as keyof typeof KNOWN_SITES].name,
-          finalUrl: `/?site=${siteId}`,
-          isExternal: false,
-          type: "parameter",
-          metadata: { site: siteId },
-        }
+        isValid: true,
+        isExternal: false,
+        destination: config.name,
+        finalUrl: `/?site=${siteId}`,
+        confidence,
+        metadata: { site: siteId, domain: config.domain },
       }
     }
   }
 
-  // Handle path inputs
+  // Check for parameter format (/?site=xxx or ?site=xxx)
+  const paramMatch = trimmedInput.match(/^\/?(?:\?site=)?(.+)$/)
+  if (paramMatch) {
+    const siteParam = paramMatch[1]
+    if (KNOWN_SITES[siteParam as keyof typeof KNOWN_SITES]) {
+      const config = KNOWN_SITES[siteParam as keyof typeof KNOWN_SITES]
+      return {
+        input,
+        type: "parameter",
+        isValid: true,
+        isExternal: false,
+        destination: config.name,
+        finalUrl: `/?site=${siteParam}`,
+        confidence: 1.0,
+        metadata: { site: siteParam },
+      }
+    }
+  }
+
+  // Check for internal paths
   if (trimmedInput.startsWith("/")) {
-    const isKnownPath = KNOWN_PATHS.some((path) => path.toLowerCase() === trimmedInput)
+    const isKnownPath = KNOWN_PATHS.some(
+      (path) => path.toLowerCase().includes(trimmedInput) || trimmedInput.includes(path.toLowerCase()),
+    )
 
-    return {
-      isValid: true,
-      destination: trimmedInput,
-      finalUrl: trimmedInput,
-      isExternal: false,
-      type: "path",
-      metadata: { path: trimmedInput },
+    if (isKnownPath || trimmedInput.match(/^\/(?:profile|person)\/[\w-]+$/)) {
+      return {
+        input,
+        type: "path",
+        isValid: true,
+        isExternal: false,
+        destination: `Internal path: ${trimmedInput}`,
+        finalUrl: trimmedInput,
+        confidence: 0.8,
+        metadata: { path: trimmedInput },
+      }
     }
   }
 
-  // Handle site ID inputs
-  if (trimmedInput in KNOWN_SITES) {
-    const site = KNOWN_SITES[trimmedInput as keyof typeof KNOWN_SITES]
-    return {
-      isValid: true,
-      destination: site.name,
-      finalUrl: `/?site=${trimmedInput}`,
-      isExternal: false,
-      type: "parameter",
-      metadata: { site: trimmedInput },
-    }
-  }
+  // Fuzzy matching for suggestions
+  const allAliases = Object.values(KNOWN_SITES).flatMap((config) => config.aliases)
+  const suggestions = allAliases
+    .map((alias) => ({
+      alias,
+      distance: levenshteinDistance(trimmedInput, alias),
+    }))
+    .filter((item) => item.distance <= 3)
+    .sort((a, b) => a.distance - b.distance)
+    .slice(0, 3)
+    .map((item) => item.alias)
 
-  // No match found
   return {
-    isValid: false,
-    destination: "Unknown destination",
-    isExternal: false,
+    input,
     type: "unknown",
-    suggestions: findSuggestions(input),
+    isValid: false,
+    isExternal: false,
+    destination: "",
+    finalUrl: "",
+    error: "Unknown site or invalid format",
+    suggestions: suggestions.length > 0 ? suggestions : undefined,
   }
 }
