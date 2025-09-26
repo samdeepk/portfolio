@@ -4,6 +4,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { DomainProvider } from "@/components/domain-provider"
+import { Toaster } from "@/components/ui/toaster"
 import { headers } from "next/headers"
 import { getActiveConfig } from "@/lib/domain-config"
 
@@ -32,7 +33,7 @@ export async function generateMetadata({ searchParams }: { searchParams: { site?
       description: `${config.siteName} - Professional portfolio and business showcase`,
       images: [config.ogImage],
     },
-    generator: "v0.dev"
+    generator: "v0.dev",
   }
 }
 
@@ -49,10 +50,12 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>{config.customCSS && <style dangerouslySetInnerHTML={{ __html: config.customCSS }} />}</head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <DomainProvider config={config}>{children}</DomainProvider>
+          <DomainProvider config={config}>
+            {children}
+            <Toaster />
+          </DomainProvider>
         </ThemeProvider>
       </body>
     </html>
