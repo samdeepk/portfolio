@@ -4,48 +4,49 @@
 
 @layer base {
   :root {
+    /* Dark Creative Agency Theme */
     --background: 210 11% 8%;
     --foreground: 210 11% 98%;
     --card: 210 11% 12%;
     --card-foreground: 210 11% 98%;
     --popover: 210 11% 12%;
     --popover-foreground: 210 11% 98%;
-    --primary: 210 100% 60%;
-    --primary-foreground: 210 11% 8%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 11% 98%;
     --secondary: 210 11% 16%;
     --secondary-foreground: 210 11% 98%;
     --muted: 210 11% 16%;
     --muted-foreground: 210 11% 65%;
     --accent: 210 11% 16%;
     --accent-foreground: 210 11% 98%;
-    --destructive: 0 84% 60%;
+    --destructive: 0 62% 30%;
     --destructive-foreground: 210 11% 98%;
     --border: 210 11% 20%;
-    --input: 210 11% 20%;
-    --ring: 210 100% 60%;
+    --input: 210 11% 16%;
+    --ring: 217 91% 60%;
     --radius: 0.75rem;
   }
 
-  .dark {
-    --background: 210 11% 8%;
-    --foreground: 210 11% 98%;
-    --card: 210 11% 12%;
-    --card-foreground: 210 11% 98%;
-    --popover: 210 11% 12%;
-    --popover-foreground: 210 11% 98%;
-    --primary: 210 100% 60%;
-    --primary-foreground: 210 11% 8%;
-    --secondary: 210 11% 16%;
-    --secondary-foreground: 210 11% 98%;
-    --muted: 210 11% 16%;
-    --muted-foreground: 210 11% 65%;
-    --accent: 210 11% 16%;
-    --accent-foreground: 210 11% 98%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 11% 98%;
-    --border: 210 11% 20%;
-    --input: 210 11% 20%;
-    --ring: 210 100% 60%;
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 217 91% 60%;
   }
 }
 
@@ -59,42 +60,27 @@
   }
 }
 
-/* Dark theme enhancements */
-@layer base {
-  body {
-    background-image: radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
-      radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
-      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.01) 0%, transparent 50%);
-    background-attachment: fixed;
-  }
-}
-
+/* Dark Creative Agency Enhancements */
 @layer components {
   .gradient-text {
-    @apply bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent;
   }
 
   .glow-effect {
-    @apply transition-all duration-300;
-  }
-
-  .glow-effect:hover {
-    @apply shadow-lg;
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+    @apply transition-all duration-300 hover:shadow-lg hover:shadow-primary/20;
   }
 
   .card-enhanced {
-    @apply bg-card/80 backdrop-blur-sm border border-border/50;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    @apply bg-card/50 backdrop-blur-sm border-border/50;
   }
 
-  .card-enhanced:hover {
-    @apply bg-card/90;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  .noise-overlay {
+    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.15) 1px, transparent 0);
+    background-size: 20px 20px;
   }
 }
 
-/* Custom scrollbar */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -104,15 +90,15 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted));
+  background: hsl(var(--border));
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground));
+  background: hsl(var(--primary));
 }
 
-/* Animation keyframes */
+/* Animations */
 @keyframes fade-in {
   from {
     opacity: 0;

@@ -5,11 +5,15 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Moon, Sun, ExternalLink, Globe, LinkIcon, Copy } from "lucide-react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
-import { useDomain } from "@/components/domain-provider"
 import { useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { useToast } from "@/hooks/use-toast"
-import type { Site } from "@/lib/shared-data"
+
+interface Site {
+  id: string
+  name: string
+  theme: string
+}
 
 interface SiteHeaderProps {
   site: Site
@@ -17,7 +21,6 @@ interface SiteHeaderProps {
 
 export function SiteHeader({ site }: SiteHeaderProps) {
   const { theme, setTheme } = useTheme()
-  const domainConfig = useDomain()
   const searchParams = useSearchParams()
   const siteParam = searchParams.get("site")
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null)
@@ -25,13 +28,16 @@ export function SiteHeader({ site }: SiteHeaderProps) {
 
   // Determine if we're accessing via domain or parameter
   const isParameterAccess = !!siteParam
-  const isDomainAccess = !isParameterAccess && domainConfig.domain !== "localhost:3000"
-  const showAllSitesLink = domainConfig.domain === "localhost:3000" || domainConfig.domain.includes("vusercontent.net")
+  const currentDomain = typeof window !== "undefined" ? window.location.hostname : "localhost"
+  const isDomainAccess = !isParameterAccess && currentDomain !== "localhost"
+  const showAllSitesLink =
+    currentDomain === "localhost" || (currentDomain && currentDomain.includes("vusercontent.net"))
 
   const copyCurrentUrl = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href)
-      setCopiedUrl(window.location.href)
+      const currentUrl = typeof window !== "undefined" ? window.location.href : ""
+      await navigator.clipboard.writeText(currentUrl)
+      setCopiedUrl(currentUrl)
       toast({
         title: "URL Copied!",
         description: "Current page URL copied to clipboard",
@@ -83,12 +89,12 @@ export function SiteHeader({ site }: SiteHeaderProps) {
                       Domain
                     </Badge>
                   )}
-                  <span className="text-sm text-muted-foreground">{domainConfig.domain}</span>
+                  <span className="text-sm text-muted-foreground">{currentDomain}</span>
                 </div>
               </div>
             )}
             <div className="flex items-center space-x-3">
-              <h1 className="text-xl font-bold">{site.name}</h1>
+              <h1 className="text-xl font-bold gradient-text">{site.name}</h1>
               <Badge variant="secondary">{site.theme}</Badge>
             </div>
           </div>
@@ -98,7 +104,9 @@ export function SiteHeader({ site }: SiteHeaderProps) {
             {!showAllSitesLink && (
               <div className="hidden md:flex items-center space-x-1 mr-4">
                 <Button variant="ghost" size="sm" onClick={copyCurrentUrl} className="text-xs">
-                  <Copy className={`h-3 w-3 mr-1 ${copiedUrl === window.location.href ? "text-green-600" : ""}`} />
+                  <Copy
+                    className={`h-3 w-3 mr-1 ${copiedUrl === (typeof window !== "undefined" ? window.location.href : "") ? "text-green-600" : ""}`}
+                  />
                   Copy URL
                 </Button>
 
@@ -159,7 +167,12 @@ export function SiteHeader({ site }: SiteHeaderProps) {
               </div>
             )}
 
-            <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="glow-effect"
+            >
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
           </div>

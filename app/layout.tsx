@@ -9,8 +9,8 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Dynamic Portfolio System",
-  description: "A multi-site portfolio system with custom domains and URL parameters",
+  title: "Portfolio Ecosystem",
+  description: "Dynamic multi-site portfolio system",
     generator: 'v0.app'
 }
 
@@ -25,24 +25,28 @@ export default function RootLayout({
         <style
           dangerouslySetInnerHTML={{
             __html: `
-            :root {
-              --background: 210 11% 8%;
-              --foreground: 210 11% 98%;
-              --card: 210 11% 12%;
-              --card-foreground: 210 11% 98%;
-              --primary: 210 100% 60%;
-              --primary-foreground: 210 11% 8%;
-              --secondary: 210 11% 16%;
-              --secondary-foreground: 210 11% 98%;
-              --muted: 210 11% 16%;
-              --muted-foreground: 210 11% 65%;
-              --border: 210 11% 20%;
+            body {
+              background: hsl(210 11% 8%);
+              color: hsl(210 11% 98%);
+            }
+            .noise-overlay::before {
+              content: '';
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background-image: 
+                radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+              background-size: 20px 20px;
+              pointer-events: none;
+              z-index: -1;
             }
           `,
           }}
         />
       </head>
-      <body className={inter.className}>
+      <body className={`${inter.className} noise-overlay`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange={false}>
           <DomainProvider>
             {children}
