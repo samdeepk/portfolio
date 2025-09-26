@@ -23,14 +23,14 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner"
 function PageContent() {
   const searchParams = useSearchParams()
   const domainConfig = useDomain()
-  const { theme, setTheme } = useTheme() // Declare theme and setTheme here
+  const { theme, setTheme } = useTheme()
 
   // Get site from URL parameter or domain mapping
   const siteParam = searchParams.get("site")
   const siteId = siteParam || domainConfig.siteId
 
   // If no site is determined, show the site selector
-  if (!siteId) {
+  if (!siteId || siteId === "selector") {
     return <SiteSelector />
   }
 
@@ -58,9 +58,7 @@ function PageContent() {
             <div className="container mx-auto px-4 py-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                    {site.name}
-                  </h1>
+                  <h1 className="text-2xl font-bold gradient-text">{site.name}</h1>
                   <Badge
                     variant="secondary"
                     className="flex items-center gap-1 animate-in slide-in-from-left duration-300"
@@ -78,7 +76,7 @@ function PageContent() {
                     variant="ghost"
                     size="icon"
                     onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                    className="hover:bg-primary/10 transition-colors"
+                    className="hover:bg-primary/10 transition-colors glow-effect"
                   >
                     {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                   </Button>
@@ -91,9 +89,7 @@ function PageContent() {
           <main className="container mx-auto px-4 py-8">
             {/* Enhanced Hero Section */}
             <div className="text-center mb-12 animate-in slide-in-from-top duration-700">
-              <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                {site.title}
-              </h2>
+              <h2 className="text-4xl font-bold mb-4 gradient-text">{site.title}</h2>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">{site.description}</p>
             </div>
 
@@ -128,12 +124,12 @@ function PageContent() {
             {/* Entity Navigation */}
             {!siteParam && (
               <div className="mb-12 animate-in slide-in-from-bottom duration-700 delay-200">
-                <h3 className="text-2xl font-semibold mb-6 text-center">Browse by Person or Company</h3>
+                <h3 className="text-2xl font-semibold mb-6 text-center gradient-text">Browse by Person or Company</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                   {Object.entries(entityConfigs).map(([key, config], index) => (
                     <Link key={key} href={`/?entity=${key}`}>
                       <Card
-                        className="group hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer text-center animate-in slide-in-from-bottom duration-500"
+                        className="group hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer text-center animate-in slide-in-from-bottom duration-500 glow-effect"
                         style={{ animationDelay: `${index * 100}ms` }}
                       >
                         <CardContent className="p-4">
@@ -163,7 +159,7 @@ function PageContent() {
               <div className="text-center py-12 animate-in fade-in duration-500">
                 <p className="text-lg text-muted-foreground">No projects found</p>
                 <Link href="/">
-                  <Button className="mt-4">View All Projects</Button>
+                  <Button className="mt-4 glow-effect">View All Projects</Button>
                 </Link>
               </div>
             )}
@@ -174,7 +170,7 @@ function PageContent() {
             <div className="container mx-auto px-4 py-8">
               <div className="text-center">
                 <p className="text-sm text-muted-foreground">
-                  © 2024 {site.name}. Built with React, Next.js and Tailwind CSS.
+                  © 2025 {site.name}. Built with React, Next.js and Tailwind CSS.
                 </p>
               </div>
             </div>

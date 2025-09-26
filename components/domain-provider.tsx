@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { createContext, useContext } from "react"
 import type { DomainConfig } from "@/lib/domain-config"
 
@@ -12,15 +11,35 @@ export function DomainProvider({
   config,
 }: {
   children: React.ReactNode
-  config: DomainConfig
+  config?: DomainConfig
 }) {
-  return <DomainContext.Provider value={config}>{children}</DomainContext.Provider>
+  // Provide a default config if none is provided
+  const defaultConfig: DomainConfig = {
+    domain: "localhost:3000",
+    siteId: "selector",
+    siteName: "Portfolio System",
+    theme: "default",
+    primaryColor: "#000000",
+    favicon: "/favicon.ico",
+    ogImage: "/placeholder.svg?height=630&width=1200",
+  }
+
+  return <DomainContext.Provider value={config || defaultConfig}>{children}</DomainContext.Provider>
 }
 
 export function useDomain() {
   const context = useContext(DomainContext)
+  // Return default config instead of throwing error
   if (!context) {
-    throw new Error("useDomain must be used within a DomainProvider")
+    return {
+      domain: "localhost:3000",
+      siteId: "selector",
+      siteName: "Portfolio System",
+      theme: "default",
+      primaryColor: "#000000",
+      favicon: "/favicon.ico",
+      ogImage: "/placeholder.svg?height=630&width=1200",
+    }
   }
   return context
 }
