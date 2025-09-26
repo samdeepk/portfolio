@@ -3,275 +3,129 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { TrendingUp, Home, User, ExternalLink, Globe, LinkIcon, Copy, Code } from "lucide-react"
+import { ExternalLink, User, Building, TrendingUp, Globe } from "lucide-react"
 import Link from "next/link"
 import { sites } from "@/lib/shared-data"
-import { useState, useEffect } from "react"
-import { useToast } from "@/hooks/use-toast"
+import { motion } from "framer-motion"
 
 export function SiteSelector() {
-  const [copiedUrl, setCopiedUrl] = useState<string | null>(null)
-  const { toast } = useToast()
-  const [origin, setOrigin] = useState("")
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  }
 
-  useEffect(() => {
-    setOrigin(window.location.origin)
-  }, [])
-
-  const siteConfigs = [
-    {
-      ...sites.srd,
-      icon: TrendingUp,
-      projects: 5,
-      highlight: "Latest: xAI (2024)",
-      domain: "srd.fund",
-      url: "https://srd.fund",
-      paramUrl: "/?site=srd",
-    },
-    {
-      ...sites.sanskrut_corp,
-      icon: Code,
-      projects: 3,
-      highlight: "Active: 2013-2021",
-      domain: "corp.sanskrut.in",
-      url: "https://corp.sanskrut.in",
-      paramUrl: "/?site=sanskrut-corp",
-    },
-    {
-      ...sites.sanskrut_enterprises,
-      icon: Home,
-      projects: 4,
-      highlight: "Portfolio Value: $2M+",
-      domain: "ent.sanskrut.in",
-      url: "https://ent.sanskrut.in",
-      paramUrl: "/?site=sanskrut-enterprises",
-    },
-    {
-      ...sites.sandeep,
-      icon: User,
-      projects: 15,
-      highlight: "15+ Years Experience",
-      domain: "sandeepkoduri.com",
-      url: "https://sandeepkoduri.com",
-      paramUrl: "/?site=sandeep",
-    },
-  ]
-
-  const copyToClipboard = async (url: string, type: string) => {
-    try {
-      await navigator.clipboard.writeText(url)
-      setCopiedUrl(url)
-      toast({
-        title: "URL Copied!",
-        description: `${type} URL copied to clipboard`,
-      })
-      setTimeout(() => setCopiedUrl(null), 2000)
-    } catch (err) {
-      toast({
-        title: "Copy Failed",
-        description: "Could not copy URL to clipboard",
-        variant: "destructive",
-      })
-    }
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 },
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Portfolio Ecosystem
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Explore our interconnected network of investments, incubations, hospitality ventures, and professional
-            achievements. Access each site via custom domain or URL parameter.
+        <motion.div
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <h1 className="text-5xl font-bold mb-6 text-gradient">Portfolio Network</h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            Explore our interconnected portfolio system featuring multiple entities, each with their own unique identity
+            and specialized focus areas.
           </p>
-          <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <Globe className="h-4 w-4" />
-              <span>Custom Domains</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <LinkIcon className="h-4 w-4" />
-              <span>URL Parameters</span>
-            </div>
-          </div>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          {siteConfigs.map((site) => {
-            const Icon = site.icon
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto"
+          variants={container}
+          initial="hidden"
+          animate="show"
+        >
+          {sites.map((site) => {
+            const IconComponent =
+              site.theme === "personal"
+                ? User
+                : site.theme === "corporate"
+                  ? Building
+                  : site.theme === "investment"
+                    ? TrendingUp
+                    : Globe
+
             return (
-              <Card
-                key={site.id}
-                className="hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] border-2 hover:border-primary/20"
-              >
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className={`p-3 rounded-lg bg-${site.primaryColor}-100 dark:bg-${site.primaryColor}-900/20`}>
-                      <Icon className={`h-8 w-8 text-${site.primaryColor}-600`} />
-                    </div>
-                    <div className="text-right">
-                      <Badge variant="secondary">{site.theme}</Badge>
-                    </div>
-                  </div>
-                  <CardTitle className="text-2xl mb-2">{site.name}</CardTitle>
-                  <CardDescription className="text-base">{site.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    {/* Site Stats */}
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Projects</span>
-                        <span className="font-semibold">{site.projects}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Highlight</span>
-                        <span className="font-semibold text-right text-xs">{site.highlight}</span>
-                      </div>
-                    </div>
-
-                    {/* Access Methods */}
-                    <div className="space-y-3">
-                      <h4 className="font-semibold text-sm">Access Methods:</h4>
-
-                      {/* Custom Domain */}
-                      <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <Globe className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-mono text-sm">{site.domain}</span>
+              <motion.div key={site.id} variants={item}>
+                <Card className="card-enhanced glow-accent group hover:scale-[1.02] transition-all duration-300">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                          <IconComponent className="h-6 w-6 text-primary" />
                         </div>
-                        <div className="flex gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => copyToClipboard(site.url, "Domain")}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Copy className={`h-3 w-3 ${copiedUrl === site.url ? "text-green-600" : ""}`} />
-                          </Button>
-                          <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0">
-                            <a href={site.url} target="_blank" rel="noopener noreferrer">
-                              <ExternalLink className="h-3 w-3" />
+                        <div>
+                          <CardTitle className="text-2xl font-bold">{site.name}</CardTitle>
+                          <Badge variant="secondary" className="mt-1">
+                            {site.theme}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <CardDescription className="text-base leading-relaxed">{site.description}</CardDescription>
+                  </CardHeader>
+
+                  <CardContent className="pt-0">
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap gap-2">
+                        {site.tags.map((tag) => (
+                          <Badge key={tag} variant="outline" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+
+                      <div className="flex gap-3">
+                        <Button asChild className="flex-1 group-hover:shadow-lg transition-shadow">
+                          <Link href={`/?site=${site.id}`}>
+                            <Globe className="mr-2 h-4 w-4" />
+                            View Portfolio
+                          </Link>
+                        </Button>
+
+                        {site.externalUrl && (
+                          <Button variant="outline" size="icon" asChild className="shrink-0 bg-transparent">
+                            <a
+                              href={site.externalUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="hover:bg-primary/10"
+                            >
+                              <ExternalLink className="h-4 w-4" />
                             </a>
                           </Button>
-                        </div>
-                      </div>
-
-                      {/* URL Parameter */}
-                      <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <LinkIcon className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-mono text-sm">{site.paramUrl}</span>
-                        </div>
-                        <div className="flex gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => copyToClipboard(origin + site.paramUrl, "Parameter")}
-                            className="h-8 w-8 p-0"
-                            disabled={!origin}
-                          >
-                            <Copy
-                              className={`h-3 w-3 ${copiedUrl === origin + site.paramUrl ? "text-green-600" : ""}`}
-                            />
-                          </Button>
-                          <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0">
-                            <Link href={site.paramUrl}>
-                              <ExternalLink className="h-3 w-3" />
-                            </Link>
-                          </Button>
-                        </div>
+                        )}
                       </div>
                     </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-2">
-                      <Button asChild className="flex-1" size="lg">
-                        <Link href={site.paramUrl}>Preview Site</Link>
-                      </Button>
-                      <Button asChild variant="outline" size="lg">
-                        <a href={site.url} target="_blank" rel="noopener noreferrer">
-                          <Globe className="h-4 w-4" />
-                        </a>
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </motion.div>
             )
           })}
-        </div>
+        </motion.div>
 
-        {/* Access Examples */}
-        <div className="text-center mt-16">
-          <Card className="max-w-4xl mx-auto bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 border-blue-200">
-            <CardContent className="p-8">
-              <h3 className="text-xl font-bold mb-6">Flexible Access Methods</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Custom Domains */}
-                <div>
-                  <h4 className="font-semibold mb-4 flex items-center gap-2">
-                    <Globe className="h-4 w-4" />
-                    Custom Domains
-                  </h4>
-                  <div className="text-left space-y-2 text-sm">
-                    <div className="flex items-center justify-between p-2 bg-white/50 rounded">
-                      <span className="font-mono">srd.fund</span>
-                      <span className="text-muted-foreground">→ Investment Fund</span>
-                    </div>
-                    <div className="flex items-center justify-between p-2 bg-white/50 rounded">
-                      <span className="font-mono">corp.sanskrut.in</span>
-                      <span className="text-muted-foreground">→ Incubation</span>
-                    </div>
-                    <div className="flex items-center justify-between p-2 bg-white/50 rounded">
-                      <span className="font-mono">ent.sanskrut.in</span>
-                      <span className="text-muted-foreground">→ Hospitality</span>
-                    </div>
-                    <div className="flex items-center justify-between p-2 bg-white/50 rounded">
-                      <span className="font-mono">sandeepkoduri.com</span>
-                      <span className="text-muted-foreground">→ Personal</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* URL Parameters */}
-                <div>
-                  <h4 className="font-semibold mb-4 flex items-center gap-2">
-                    <LinkIcon className="h-4 w-4" />
-                    URL Parameters
-                  </h4>
-                  <div className="text-left space-y-2 text-sm">
-                    <div className="flex items-center justify-between p-2 bg-white/50 rounded">
-                      <span className="font-mono">?site=srd</span>
-                      <span className="text-muted-foreground">→ Investment Fund</span>
-                    </div>
-                    <div className="flex items-center justify-between p-2 bg-white/50 rounded">
-                      <span className="font-mono">?site=sanskrut-corp</span>
-                      <span className="text-muted-foreground">→ Incubation</span>
-                    </div>
-                    <div className="flex items-center justify-between p-2 bg-white/50 rounded">
-                      <span className="font-mono">?site=sanskrut-enterprises</span>
-                      <span className="text-muted-foreground">→ Hospitality</span>
-                    </div>
-                    <div className="flex items-center justify-between p-2 bg-white/50 rounded">
-                      <span className="font-mono">?site=sandeep</span>
-                      <span className="text-muted-foreground">→ Personal</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 p-4 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-                <p className="text-sm text-blue-800 dark:text-blue-200">
-                  <strong>Pro Tip:</strong> URL parameters take precedence over domain routing, making it easy to test
-                  and share specific sites regardless of the current domain.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <motion.div
+          className="text-center mt-16"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+        >
+          <div className="inline-flex items-center space-x-2 text-sm text-muted-foreground bg-card/50 px-4 py-2 rounded-full border border-border/50">
+            <Globe className="h-4 w-4" />
+            <span>Multi-domain portfolio system with smart navigation</span>
+          </div>
+        </motion.div>
       </div>
     </div>
   )

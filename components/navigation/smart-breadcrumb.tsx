@@ -71,15 +71,15 @@ export function SmartBreadcrumb({ site }: SmartBreadcrumbProps) {
   return (
     <nav className="flex items-center space-x-1 text-sm text-muted-foreground">
       {/* Access method indicator */}
-      <div className="flex items-center space-x-2 mr-2">
+      <div className="flex items-center space-x-2 mr-3">
         {isParameterAccess && (
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="outline" className="text-xs border-primary/20 bg-primary/5">
             <LinkIcon className="h-3 w-3 mr-1" />
             Parameter
           </Badge>
         )}
         {isDomainAccess && (
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="outline" className="text-xs border-primary/20 bg-primary/5">
             <Globe className="h-3 w-3 mr-1" />
             Domain
           </Badge>
@@ -89,8 +89,13 @@ export function SmartBreadcrumb({ site }: SmartBreadcrumbProps) {
       {/* Breadcrumb items */}
       {breadcrumbItems.map((item, index) => (
         <div key={item.href} className="flex items-center space-x-1">
-          {index > 0 && <ChevronRight className="h-3 w-3" />}
-          <Button variant="ghost" size="sm" asChild className="h-6 px-2 text-xs">
+          {index > 0 && <ChevronRight className="h-3 w-3 text-border" />}
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
+            className="h-7 px-2 text-xs hover:bg-primary/10 transition-all duration-200"
+          >
             <Link href={item.href} className="flex items-center space-x-1">
               {item.icon}
               <span>{item.label}</span>

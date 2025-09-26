@@ -1,208 +1,183 @@
 "use client"
 
-import { useState } from "react"
-import { Navigation, ArrowRight, Globe, LinkIcon, ExternalLink, Zap } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import Link from "next/link"
 import { URLNavigatorWidget } from "@/components/navigation/url-navigator-widget"
+import { ArrowLeft, Navigation, Zap, Globe, LinkIcon, Search } from "lucide-react"
+import Link from "next/link"
+import { useState } from "react"
 
 export default function NavigatePage() {
   const [showWidget, setShowWidget] = useState(true)
-
-  const features = [
-    {
-      icon: <Zap className="h-5 w-5" />,
-      title: "Smart Parsing",
-      description: "Automatically detects and validates different input formats",
-    },
-    {
-      icon: <Globe className="h-5 w-5" />,
-      title: "Multi-Format Support",
-      description: "Handles domains, parameters, paths, and external URLs",
-    },
-    {
-      icon: <LinkIcon className="h-5 w-5" />,
-      title: "Fuzzy Matching",
-      description: "Provides intelligent suggestions for invalid inputs",
-    },
-    {
-      icon: <ArrowRight className="h-5 w-5" />,
-      title: "Quick Navigation",
-      description: "One-click access to common destinations",
-    },
-  ]
 
   const examples = [
     {
       input: "srd.fund",
       type: "Domain",
       description: "Direct domain access",
-      badge: "External",
+      icon: <Globe className="h-4 w-4" />,
     },
     {
-      input: "/?site=sanskrut-corp",
+      input: "?site=sandeep",
       type: "Parameter",
-      description: "Site parameter routing",
-      badge: "Internal",
+      description: "URL parameter access",
+      icon: <LinkIcon className="h-4 w-4" />,
     },
     {
-      input: "/profile/spacex",
-      type: "Path",
-      description: "Internal path navigation",
-      badge: "Internal",
+      input: "sanskrut corp",
+      type: "Site Name",
+      description: "Fuzzy site name matching",
+      icon: <Search className="h-4 w-4" />,
     },
     {
-      input: "srd",
-      type: "Shorthand",
-      description: "Quick site identifier",
-      badge: "Smart",
+      input: "https://example.com",
+      type: "External",
+      description: "External URL navigation",
+      icon: <Globe className="h-4 w-4" />,
     },
   ]
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link href="/">
-                <Button variant="ghost" size="sm">
-                  <ArrowRight className="mr-2 h-4 w-4 rotate-180" />
-                  Back to Home
-                </Button>
-              </Link>
-              <h1 className="text-xl font-semibold">Smart Navigation</h1>
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center space-x-4">
+            <Link href="/">
+              <Button variant="ghost" size="sm" className="hover:bg-primary/10 transition-colors">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Sites
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-3xl font-bold text-gradient">Smart Navigation</h1>
+              <p className="text-muted-foreground">Intelligent URL parsing and site navigation</p>
             </div>
           </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <div className="text-center mb-12 animate-in slide-in-from-top duration-700">
-          <div className="flex items-center justify-center mb-4">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-              <Navigation className="h-8 w-8 text-primary" />
-            </div>
-          </div>
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            Smart Navigation System
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Navigate anywhere with intelligent URL parsing, fuzzy matching, and multi-format support
-          </p>
+          <Badge variant="secondary" className="bg-secondary/50">
+            <Zap className="h-3 w-3 mr-1" />
+            Interactive Demo
+          </Badge>
         </div>
 
-        {/* Interactive Widget */}
-        <div className="mb-12 animate-in slide-in-from-bottom duration-700 delay-200">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-semibold">Try It Out</h2>
-            <Button variant="outline" onClick={() => setShowWidget(!showWidget)}>
-              {showWidget ? "Hide" : "Show"} Widget
-            </Button>
-          </div>
-
-          {showWidget && (
-            <div className="animate-in slide-in-from-top duration-300">
-              <URLNavigatorWidget />
-            </div>
-          )}
-        </div>
-
-        {/* Features */}
-        <div className="mb-12 animate-in slide-in-from-bottom duration-700 delay-400">
-          <h2 className="text-2xl font-semibold mb-6 text-center">Key Features</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => (
-              <Card
-                key={index}
-                className="text-center animate-in slide-in-from-bottom duration-500"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <CardHeader>
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2">
-                    {feature.icon}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Navigation Widget */}
+          <div className="lg:col-span-2">
+            <Card className="card-enhanced">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Navigation className="h-5 w-5 mr-2" />
+                  URL Navigator
+                </CardTitle>
+                <CardDescription>
+                  Enter any URL, domain, site name, or parameter to navigate intelligently
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {showWidget ? (
+                  <URLNavigatorWidget onClose={() => setShowWidget(false)} />
+                ) : (
+                  <div className="text-center py-8">
+                    <Button onClick={() => setShowWidget(true)} className="glow-accent">
+                      <Navigation className="h-4 w-4 mr-2" />
+                      Open Navigator
+                    </Button>
                   </div>
-                  <CardTitle className="text-lg">{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription>{feature.description}</CardDescription>
-                </CardContent>
-              </Card>
-            ))}
+                )}
+              </CardContent>
+            </Card>
           </div>
-        </div>
 
-        {/* Examples */}
-        <div className="mb-12 animate-in slide-in-from-bottom duration-700 delay-600">
-          <h2 className="text-2xl font-semibold mb-6 text-center">Supported Formats</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {examples.map((example, index) => (
-              <Card
-                key={index}
-                className="animate-in slide-in-from-left duration-500"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <code className="text-sm font-mono bg-muted px-2 py-1 rounded">{example.input}</code>
-                    <Badge variant="outline">{example.badge}</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-sm">{example.type}</p>
-                      <p className="text-xs text-muted-foreground">{example.description}</p>
+          {/* Examples & Features */}
+          <div className="space-y-6">
+            {/* Input Examples */}
+            <Card className="card-enhanced">
+              <CardHeader>
+                <CardTitle className="text-lg">Input Examples</CardTitle>
+                <CardDescription>Try these different input formats</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {examples.map((example, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center space-x-3 p-3 rounded-lg bg-muted/30 border border-border/50"
+                  >
+                    <div className="flex items-center space-x-2 flex-1">
+                      {example.icon}
+                      <div>
+                        <code className="text-sm font-mono bg-background/50 px-2 py-1 rounded">{example.input}</code>
+                        <p className="text-xs text-muted-foreground mt-1">{example.description}</p>
+                      </div>
                     </div>
-                    {example.badge === "External" ? (
-                      <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                    ) : (
-                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                    )}
+                    <Badge variant="outline" className="text-xs">
+                      {example.type}
+                    </Badge>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Features */}
+            <Card className="card-enhanced">
+              <CardHeader>
+                <CardTitle className="text-lg">Features</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 rounded-full bg-primary mt-2"></div>
+                  <div>
+                    <p className="font-medium text-sm">Real-time Parsing</p>
+                    <p className="text-xs text-muted-foreground">Instant validation and suggestions</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 rounded-full bg-primary mt-2"></div>
+                  <div>
+                    <p className="font-medium text-sm">Fuzzy Matching</p>
+                    <p className="text-xs text-muted-foreground">Smart suggestions for typos</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 rounded-full bg-primary mt-2"></div>
+                  <div>
+                    <p className="font-medium text-sm">Multi-format Support</p>
+                    <p className="text-xs text-muted-foreground">Domains, parameters, site names</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 rounded-full bg-primary mt-2"></div>
+                  <div>
+                    <p className="font-medium text-sm">Recent History</p>
+                    <p className="text-xs text-muted-foreground">Quick access to recent inputs</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Keyboard Shortcuts */}
+            <Card className="card-enhanced">
+              <CardHeader>
+                <CardTitle className="text-lg">Keyboard Shortcuts</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Navigate</span>
+                  <Badge variant="outline" className="text-xs font-mono">
+                    Enter
+                  </Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Close</span>
+                  <Badge variant="outline" className="text-xs font-mono">
+                    Escape
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
-
-        <Separator className="my-8" />
-
-        {/* How It Works */}
-        <div className="text-center animate-in slide-in-from-bottom duration-700 delay-800">
-          <h2 className="text-2xl font-semibold mb-6">How It Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="space-y-2">
-              <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto font-bold">
-                1
-              </div>
-              <h3 className="font-semibold">Input Detection</h3>
-              <p className="text-sm text-muted-foreground">
-                Automatically identifies the input format and validates syntax
-              </p>
-            </div>
-            <div className="space-y-2">
-              <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto font-bold">
-                2
-              </div>
-              <h3 className="font-semibold">Smart Matching</h3>
-              <p className="text-sm text-muted-foreground">
-                Uses fuzzy matching to provide suggestions for invalid inputs
-              </p>
-            </div>
-            <div className="space-y-2">
-              <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto font-bold">
-                3
-              </div>
-              <h3 className="font-semibold">Seamless Navigation</h3>
-              <p className="text-sm text-muted-foreground">Routes to the correct destination with appropriate method</p>
-            </div>
-          </div>
-        </div>
-      </main>
+      </div>
     </div>
   )
 }

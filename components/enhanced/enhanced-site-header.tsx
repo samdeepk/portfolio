@@ -58,45 +58,49 @@ export function EnhancedSiteHeader({ site }: EnhancedSiteHeaderProps) {
 
   return (
     <>
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+      <header className="border-b border-border/50 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               {showAllSitesLink ? (
                 <Link href="/">
-                  <Button variant="ghost" size="sm" className="hover:bg-primary/10 transition-colors">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="hover:bg-primary/10 transition-all duration-200 glow-accent"
+                  >
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     All Sites
                   </Button>
                 </Link>
               ) : (
                 <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                    <span className="text-primary-foreground font-bold text-sm">{site.name.charAt(0)}</span>
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center border border-border/50">
+                    <span className="text-primary font-bold text-sm">{site.name.charAt(0)}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     {isParameterAccess && (
-                      <Badge variant="outline" className="text-xs animate-in slide-in-from-left duration-300">
+                      <Badge variant="outline" className="text-xs animate-slide-in-left border-primary/20 bg-primary/5">
                         <LinkIcon className="h-3 w-3 mr-1" />
                         Parameter
                       </Badge>
                     )}
                     {isDomainAccess && (
-                      <Badge variant="outline" className="text-xs animate-in slide-in-from-left duration-300">
+                      <Badge variant="outline" className="text-xs animate-slide-in-left border-primary/20 bg-primary/5">
                         <Globe className="h-3 w-3 mr-1" />
                         Domain
                       </Badge>
                     )}
-                    <span className="text-sm text-muted-foreground font-mono">{domainConfig.domain}</span>
+                    <span className="text-sm text-muted-foreground font-mono bg-muted/30 px-2 py-1 rounded-md">
+                      {domainConfig.domain}
+                    </span>
                   </div>
                 </div>
               )}
 
               <div className="flex items-center space-x-3">
-                <h1 className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                  {site.name}
-                </h1>
-                <Badge variant="secondary" className="animate-in slide-in-from-right duration-300">
+                <h1 className="text-xl font-bold text-gradient">{site.name}</h1>
+                <Badge variant="secondary" className="animate-slide-in-right bg-secondary/50 border-border/50">
                   {site.theme}
                 </Badge>
               </div>
@@ -108,7 +112,7 @@ export function EnhancedSiteHeader({ site }: EnhancedSiteHeaderProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowNavigator(!showNavigator)}
-                className="hidden md:flex hover:bg-primary/10 transition-colors"
+                className="hidden md:flex hover:bg-primary/10 transition-all duration-200 glow-accent"
               >
                 <Navigation className="h-4 w-4 mr-2" />
                 Navigate
@@ -121,9 +125,11 @@ export function EnhancedSiteHeader({ site }: EnhancedSiteHeaderProps) {
                     variant="ghost"
                     size="sm"
                     onClick={copyCurrentUrl}
-                    className="text-xs hover:bg-primary/10 transition-colors"
+                    className="text-xs hover:bg-primary/10 transition-all duration-200"
                   >
-                    <Copy className={`h-3 w-3 mr-1 ${copiedUrl === window.location.href ? "text-green-600" : ""}`} />
+                    <Copy
+                      className={`h-3 w-3 mr-1 transition-colors ${copiedUrl === window.location.href ? "text-green-400" : ""}`}
+                    />
                     Copy URL
                   </Button>
 
@@ -131,7 +137,12 @@ export function EnhancedSiteHeader({ site }: EnhancedSiteHeaderProps) {
                   {site.id in siteUrls && (
                     <>
                       {isParameterAccess ? (
-                        <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-colors">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          asChild
+                          className="hover:bg-primary/10 transition-all duration-200"
+                        >
                           <a
                             href={siteUrls[site.id as keyof typeof siteUrls].domain}
                             target="_blank"
@@ -142,7 +153,12 @@ export function EnhancedSiteHeader({ site }: EnhancedSiteHeaderProps) {
                           </a>
                         </Button>
                       ) : (
-                        <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-colors">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          asChild
+                          className="hover:bg-primary/10 transition-all duration-200"
+                        >
                           <Link href={siteUrls[site.id as keyof typeof siteUrls].param}>
                             <LinkIcon className="h-3 w-3 mr-1" />
                             Parameter
@@ -157,25 +173,25 @@ export function EnhancedSiteHeader({ site }: EnhancedSiteHeaderProps) {
               {/* Cross-site navigation */}
               {!showAllSitesLink && (
                 <div className="hidden xl:flex items-center space-x-1 mr-2">
-                  <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-colors">
+                  <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-all duration-200">
                     <a href="https://srd.fund" target="_blank" rel="noopener noreferrer">
                       SRD
                       <ExternalLink className="ml-1 h-3 w-3" />
                     </a>
                   </Button>
-                  <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-colors">
+                  <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-all duration-200">
                     <a href="https://corp.sanskrut.in" target="_blank" rel="noopener noreferrer">
                       Corp
                       <ExternalLink className="ml-1 h-3 w-3" />
                     </a>
                   </Button>
-                  <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-colors">
+                  <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-all duration-200">
                     <a href="https://ent.sanskrut.in" target="_blank" rel="noopener noreferrer">
                       Enterprises
                       <ExternalLink className="ml-1 h-3 w-3" />
                     </a>
                   </Button>
-                  <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-colors">
+                  <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-all duration-200">
                     <a href="https://sandeepkoduri.com" target="_blank" rel="noopener noreferrer">
                       Sandeep
                       <ExternalLink className="ml-1 h-3 w-3" />
@@ -189,7 +205,7 @@ export function EnhancedSiteHeader({ site }: EnhancedSiteHeaderProps) {
                 variant="ghost"
                 size="icon"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="hover:bg-primary/10 transition-colors"
+                className="hover:bg-primary/10 transition-all duration-200 glow-accent"
               >
                 {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
@@ -197,7 +213,7 @@ export function EnhancedSiteHeader({ site }: EnhancedSiteHeaderProps) {
           </div>
 
           {/* Breadcrumbs */}
-          <div className="mt-2 border-t pt-2">
+          <div className="mt-3 pt-3 border-t border-border/30">
             <SmartBreadcrumb site={site} />
           </div>
         </div>
@@ -205,7 +221,7 @@ export function EnhancedSiteHeader({ site }: EnhancedSiteHeaderProps) {
 
       {/* URL Navigator Widget */}
       {showNavigator && (
-        <div className="border-b bg-muted/50 p-4 animate-in slide-in-from-top duration-200">
+        <div className="border-b border-border/50 bg-card/30 backdrop-blur-sm p-4 animate-slide-in-from-top">
           <URLNavigatorWidget onClose={() => setShowNavigator(false)} />
         </div>
       )}

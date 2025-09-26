@@ -5,55 +5,30 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { DomainProvider } from "@/components/domain-provider"
 import { Toaster } from "@/components/ui/toaster"
-import { headers } from "next/headers"
-import { getActiveConfig } from "@/lib/domain-config"
 
 const inter = Inter({ subsets: ["latin"] })
 
-export async function generateMetadata({ searchParams }: { searchParams: { site?: string } }): Promise<Metadata> {
-  const headersList = await headers()
-  const host = headersList.get("host") || "localhost:3000"
-  const config = getActiveConfig(host, searchParams?.site)
-
-  return {
-    title: config.siteName,
-    description: `${config.siteName} - Professional portfolio and business showcase`,
-    icons: {
-      icon: config.favicon,
-    },
-    openGraph: {
-      title: config.siteName,
-      description: `${config.siteName} - Professional portfolio and business showcase`,
-      images: [config.ogImage],
-      url: `https://${config.domain}`,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: config.siteName,
-      description: `${config.siteName} - Professional portfolio and business showcase`,
-      images: [config.ogImage],
-    },
-    generator: "v0.dev",
-  }
+export const metadata: Metadata = {
+  title: "Dynamic Portfolio System",
+  description: "Multi-site portfolio system with custom domains and URL parameters",
+  keywords: ["portfolio", "multi-site", "dynamic", "custom domains"],
+  authors: [{ name: "Portfolio System" }],
+  viewport: "width=device-width, initial-scale=1",
+  robots: "index, follow",
+    generator: 'v0.app'
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
-  searchParams,
 }: {
   children: React.ReactNode
-  searchParams?: { site?: string }
 }) {
-  const headersList = await headers()
-  const host = headersList.get("host") || "localhost:3000"
-  const config = getActiveConfig(host, searchParams?.site)
-
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <DomainProvider config={config}>
-            {children}
+      <body className={`${inter.className} noise-overlay`}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange={false}>
+          <DomainProvider>
+            <div className="min-h-screen bg-background text-foreground">{children}</div>
             <Toaster />
           </DomainProvider>
         </ThemeProvider>
@@ -61,7 +36,3 @@ export default async function RootLayout({
     </html>
   )
 }
-
-export const metadata = {
-      generator: 'v0.app'
-    };

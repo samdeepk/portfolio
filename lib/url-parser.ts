@@ -1,209 +1,209 @@
 export interface ParsedURL {
-  input: string
-  type: "domain" | "parameter" | "path" | "external" | "unknown"
+  type: "domain" | "parameter" | "path" | "external" | "site-name" | "unknown"
   isValid: boolean
-  finalUrl?: string
-  isExternal?: boolean
-  metadata?: string
-  error?: string
+  isExternal: boolean
+  finalUrl: string
+  accessMethod?: "domain" | "parameter"
   suggestions?: string[]
-  confidence?: number
+  error?: string
+}
+
+// Site mappings for fuzzy matching
+const siteKeywords = {
+  srd: ["srd", "fund", "investment", "srd.fund"],
+  "sanskrut-corp": ["sanskrut", "corp", "corporate", "corp.sanskrut.in"],
+  "sanskrut-enterprises": ["enterprises", "ent", "business", "ent.sanskrut.in"],
+  sandeep: ["sandeep", "koduri", "personal", "sandeepkoduri.com"],
+}
+
+const domainMappings = {
+  "srd.fund": "srd",
+  "corp.sanskrut.in": "sanskrut-corp",
+  "ent.sanskrut.in": "sanskrut-enterprises",
+  "sandeepkoduri.com": "sandeep",
 }
 
 // Levenshtein distance for fuzzy matching
 function levenshteinDistance(str1: string, str2: string): number {
-  const matrix = []
+  const matrix = Array(str2.length + 1)
+    .fill(null)
+    .map(() => Array(str1.length + 1).fill(null))
 
-  for (let i = 0; i <= str2.length; i++) {
-    matrix[i] = [i]
-  }
+  for (let i = 0; i <= str1.length; i++) matrix[0][i] = i
+  for (let j = 0; j <= str2.length; j++) matrix[j][0] = j
 
-  for (let j = 0; j <= str1.length; j++) {
-    matrix[0][j] = j
-  }
-
-  for (let i = 1; i <= str2.length; i++) {
-    for (let j = 1; j <= str1.length; j++) {
-      if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-        matrix[i][j] = matrix[i - 1][j - 1]
-      } else {
-        matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, matrix[i][j - 1] + 1, matrix[i - 1][j] + 1)
-      }
+  for (let j = 1; j <= str2.length; j++) {
+    for (let i = 1; i <= str1.length; i++) {
+      const indicator = str1[i - 1] === str2[j - 1] ? 0 : 1
+      matrix[j][i] = Math.min(matrix[j][i - 1] + 1, matrix[j - 1][i] + 1, matrix[j - 1][i - 1] + indicator)
     }
   }
 
   return matrix[str2.length][str1.length]
 }
 
-// Known sites and their configurations
-const knownSites = {
-  srd: {
-    domain: "srd.fund",
-    param: "/?site=srd",
-    description: "SRD Fund - Investment portfolio",
-  },
-  "sanskrut-corp": {
-    domain: "corp.sanskrut.in",
-    param: "/?site=sanskrut-corp",
-    description: "Sanskrut Corp - Corporate ventures",
-  },
-  "sanskrut-enterprises": {
-    domain: "ent.sanskrut.in",
-    param: "/?site=sanskrut-enterprises",
-    description: "Sanskrut Enterprises - Real estate portfolio",
-  },
-  sandeep: {
-    domain: "sandeepkoduri.com",
-    param: "/?site=sandeep",
-    description: "Sandeep Koduri - Personal portfolio",
-  },
+function findBestMatch(input: string, candidates: string[]): string[] {
+  const inputLower = input.toLowerCase()
+  const matches = candidates
+    .map((candidate) => ({
+      candidate,
+      distance: levenshteinDistance(inputLower, candidate.toLowerCase()),
+      includes: candidate.toLowerCase().includes(inputLower),
+    }))
+    .filter((match) => match.distance <= 3 || match.includes)
+    .sort((a, b) => {
+      if (a.includes && !b.includes) return -1
+      if (!a.includes && b.includes) return 1
+      return a.distance - b.distance
+    })
+    .map((match) => match.candidate)
+
+  return matches.slice(0, 3)
 }
 
-const knownDomains = [
-  "srd.fund",
-  "corp.sanskrut.in",
-  "ent.sanskrut.in",
-  "sandeepkoduri.com",
-  "sanskrutcorp.com",
-  "sanskrutenterprises.com",
-]
-
-const knownPaths = ["/profile/", "/person/", "/navigate"]
-
 export function parseURL(input: string): ParsedURL {
-  const trimmedInput = input.trim().toLowerCase()
+  const trimmed = input.trim().toLowerCase()
 
-  if (!trimmedInput) {
+  if (!trimmed) {
     return {
-      input,
       type: "unknown",
       isValid: false,
-      error: "Please enter a URL, domain, or site parameter",
+      isExternal: false,
+      finalUrl: "",
+      error: "Empty input",
     }
   }
 
-  // Check for external URLs
-  if (trimmedInput.startsWith("http://") || trimmedInput.startsWith("https://")) {
+  // Check for full URLs (external)
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
     try {
-      const url = new URL(trimmedInput)
+      const url = new URL(trimmed)
       return {
-        input,
         type: "external",
         isValid: true,
-        finalUrl: trimmedInput,
         isExternal: true,
-        metadata: `External link to ${url.hostname}`,
+        finalUrl: trimmed,
       }
     } catch {
       return {
-        input,
         type: "external",
         isValid: false,
+        isExternal: true,
+        finalUrl: "",
         error: "Invalid URL format",
       }
     }
   }
 
-  // Check for site parameters
-  if (trimmedInput.startsWith("/?site=") || trimmedInput.startsWith("?site=")) {
-    const siteId = trimmedInput.replace(/^\?/, "").replace("/?site=", "").replace("?site=", "")
-    if (siteId in knownSites) {
+  // Check for parameter format (?site=...)
+  if (trimmed.startsWith("?site=") || trimmed.startsWith("site=")) {
+    const siteParam = trimmed.replace(/^\?/, "").replace(/^site=/, "")
+    if (siteParam in siteKeywords) {
       return {
-        input,
         type: "parameter",
         isValid: true,
-        finalUrl: `/?site=${siteId}`,
-        metadata: knownSites[siteId as keyof typeof knownSites].description,
-        confidence: 1.0,
+        isExternal: false,
+        finalUrl: `/?site=${siteParam}`,
+        accessMethod: "parameter",
       }
     } else {
-      const suggestions = Object.keys(knownSites).map((site) => `/?site=${site}`)
+      const allSites = Object.keys(siteKeywords)
+      const suggestions = findBestMatch(siteParam, allSites)
       return {
-        input,
         type: "parameter",
         isValid: false,
-        error: "Unknown site parameter",
-        suggestions,
+        isExternal: false,
+        finalUrl: "",
+        error: `Unknown site: ${siteParam}`,
+        suggestions: suggestions.map((s) => `?site=${s}`),
       }
     }
   }
 
-  // Check for direct site IDs
-  if (trimmedInput in knownSites) {
+  // Check for direct domain matches
+  if (trimmed in domainMappings) {
     return {
-      input,
-      type: "parameter",
-      isValid: true,
-      finalUrl: knownSites[trimmedInput as keyof typeof knownSites].param,
-      metadata: knownSites[trimmedInput as keyof typeof knownSites].description,
-      confidence: 1.0,
-    }
-  }
-
-  // Check for known domains
-  const domainMatch = knownDomains.find(
-    (domain) => domain.toLowerCase() === trimmedInput || trimmedInput === domain.replace(/^https?:\/\//, ""),
-  )
-
-  if (domainMatch) {
-    return {
-      input,
       type: "domain",
       isValid: true,
-      finalUrl: `https://${domainMatch}`,
       isExternal: true,
-      metadata: `Navigate to ${domainMatch}`,
-      confidence: 1.0,
+      finalUrl: `https://${trimmed}`,
+      accessMethod: "domain",
     }
   }
 
-  // Check for internal paths
-  if (trimmedInput.startsWith("/")) {
-    const isKnownPath = knownPaths.some((path) => trimmedInput.startsWith(path))
-    if (isKnownPath || trimmedInput === "/") {
+  // Check for domain-like patterns (contains dots)
+  if (trimmed.includes(".") && !trimmed.includes(" ")) {
+    const cleanDomain = trimmed.replace(/^https?:\/\//, "").replace(/\/$/, "")
+    if (cleanDomain in domainMappings) {
       return {
-        input,
-        type: "path",
+        type: "domain",
         isValid: true,
-        finalUrl: trimmedInput,
-        metadata: `Internal path: ${trimmedInput}`,
-        confidence: 1.0,
+        isExternal: true,
+        finalUrl: `https://${cleanDomain}`,
+        accessMethod: "domain",
       }
     } else {
+      // Try to find similar domains
+      const allDomains = Object.keys(domainMappings)
+      const suggestions = findBestMatch(cleanDomain, allDomains)
       return {
-        input,
-        type: "path",
-        isValid: true,
-        finalUrl: trimmedInput,
-        metadata: `Internal path: ${trimmedInput}`,
-        confidence: 0.7,
+        type: "domain",
+        isValid: false,
+        isExternal: true,
+        finalUrl: "",
+        error: `Unknown domain: ${cleanDomain}`,
+        suggestions: suggestions.length > 0 ? suggestions : [`https://${cleanDomain}`],
       }
     }
   }
 
-  // Fuzzy matching for suggestions
-  const allOptions = [
-    ...Object.keys(knownSites),
-    ...knownDomains,
-    ...Object.keys(knownSites).map((site) => `/?site=${site}`),
+  // Check for site name fuzzy matching
+  const allKeywords = Object.entries(siteKeywords).flatMap(([siteId, keywords]) =>
+    keywords.map((keyword) => ({ keyword, siteId })),
+  )
+
+  const keywordMatches = allKeywords.filter(
+    ({ keyword }) =>
+      keyword.toLowerCase().includes(trimmed) || levenshteinDistance(trimmed, keyword.toLowerCase()) <= 2,
+  )
+
+  if (keywordMatches.length > 0) {
+    const bestMatch = keywordMatches[0]
+    return {
+      type: "site-name",
+      isValid: true,
+      isExternal: false,
+      finalUrl: `/?site=${bestMatch.siteId}`,
+      accessMethod: "parameter",
+      suggestions: keywordMatches.slice(1, 4).map((m) => `?site=${m.siteId}`),
+    }
+  }
+
+  // Check for path-like patterns
+  if (trimmed.startsWith("/")) {
+    return {
+      type: "path",
+      isValid: true,
+      isExternal: false,
+      finalUrl: trimmed,
+    }
+  }
+
+  // Fallback: generate suggestions
+  const allSuggestions = [
+    ...Object.keys(domainMappings),
+    ...Object.keys(siteKeywords),
+    ...Object.values(siteKeywords).flat(),
   ]
 
-  const suggestions = allOptions
-    .map((option) => ({
-      option,
-      distance: levenshteinDistance(trimmedInput, option.toLowerCase()),
-    }))
-    .filter(({ distance }) => distance <= 3)
-    .sort((a, b) => a.distance - b.distance)
-    .slice(0, 3)
-    .map(({ option }) => option)
+  const suggestions = findBestMatch(trimmed, allSuggestions)
 
   return {
-    input,
     type: "unknown",
     isValid: false,
-    error: "Unrecognized input format",
-    suggestions:
-      suggestions.length > 0 ? suggestions : ["srd", "/?site=sanskrut-corp", "/profile/spacex", "https://example.com"],
+    isExternal: false,
+    finalUrl: "",
+    error: `Could not parse: ${trimmed}`,
+    suggestions: suggestions.slice(0, 5),
   }
 }
