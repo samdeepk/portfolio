@@ -1,183 +1,253 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { useState, useMemo } from "react"
+import { Search, Building, User, TrendingUp, Briefcase, ExternalLink, ArrowRight } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Search, Building, User, Globe, ArrowRight, Sparkles } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { sites } from "@/lib/shared-data"
+import { entityConfigs } from "@/lib/data"
+
+const siteConfigs = [
+  {
+    id: "srd",
+    name: "SRD Innovation Fund",
+    title: "Investing in Tomorrow's Breakthroughs",
+    description: "Showcasing high-value private equity investments in innovative, high-growth startups.",
+    theme: "Startup Investments",
+    primaryColor: "blue",
+    stats: { projects: 8, investments: 8, companies: 0, experiences: 0 },
+    icon: Building,
+  },
+  {
+    id: "sanskrut-corp",
+    name: "Sanskrut Corp",
+    title: "Software Consulting & Incubation",
+    description: "Expert software consulting services and a platform for incubating early-stage technology ventures.",
+    theme: "Software Consulting",
+    primaryColor: "green",
+    stats: { projects: 5, investments: 0, companies: 2, experiences: 3 },
+    icon: Building,
+  },
+  {
+    id: "sanskrut-enterprises",
+    name: "Sanskrut Enterprises",
+    title: "Hospitality & Real Estate Excellence",
+    description: "A curated portfolio of strategic hospitality investments and premium real estate properties.",
+    theme: "Hospitality Investments",
+    primaryColor: "purple",
+    stats: { projects: 6, investments: 4, companies: 2, experiences: 0 },
+    icon: Building,
+  },
+  {
+    id: "sandeep",
+    name: "Sandeep Koduri",
+    title: "Technology Leader & Strategic Investor",
+    description: "Bridging innovation, investment, and operational excellence across a diverse portfolio.",
+    theme: "Personal Portfolio",
+    primaryColor: "orange",
+    stats: { projects: 12, investments: 3, companies: 4, experiences: 5 },
+    icon: User,
+  },
+]
 
 export function SiteSelector() {
   const [searchTerm, setSearchTerm] = useState("")
 
-  const filteredSites = sites.filter(
-    (site) =>
-      site.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      site.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      site.theme.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+  const filteredSites = useMemo(() => {
+    if (!searchTerm) return siteConfigs
+    return siteConfigs.filter(
+      (site) =>
+        site.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        site.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        site.theme.toLowerCase().includes(searchTerm.toLowerCase()),
+    )
+  }, [searchTerm])
+
+  const totalStats = useMemo(() => {
+    return siteConfigs.reduce(
+      (acc, site) => ({
+        projects: acc.projects + site.stats.projects,
+        investments: acc.investments + site.stats.investments,
+        companies: acc.companies + site.stats.companies,
+        experiences: acc.experiences + site.stats.experiences,
+      }),
+      { projects: 0, investments: 0, companies: 0, experiences: 0 },
+    )
+  }, [])
 
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
-        <div className="container mx-auto px-4 py-16 relative">
+        <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-12 animate-in slide-in-from-top duration-700">
-            <div className="flex items-center justify-center mb-4">
-              <Sparkles className="h-8 w-8 text-primary mr-2" />
-              <h1 className="text-4xl md:text-6xl font-bold gradient-text">Portfolio Universe</h1>
-            </div>
+            <h1 className="text-5xl font-bold mb-6 gradient-text">Portfolio Ecosystem</h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              Discover a dynamic ecosystem of portfolios, each telling a unique story of innovation, growth, and
-              success. Choose your journey below.
+              Explore our comprehensive portfolio system featuring investments, companies, and professional experiences
+              across multiple domains and industries.
             </p>
 
-            {/* Search Bar */}
-            <div className="relative max-w-md mx-auto animate-in slide-in-from-bottom duration-700 delay-200">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search portfolios..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 glow-effect"
-              />
+            {/* Search */}
+            <div className="max-w-md mx-auto mb-8">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder="Search portfolios..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 bg-card/50 border-border/50 focus:bg-card/80 transition-colors"
+                />
+              </div>
             </div>
           </div>
 
           {/* Stats Overview */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 animate-in slide-in-from-bottom duration-700 delay-300">
-            <Card className="text-center glow-effect">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+            <Card className="card-enhanced text-center animate-in slide-in-from-bottom duration-500">
               <CardContent className="p-4">
-                <div className="text-2xl font-bold text-primary">{sites.length}</div>
-                <div className="text-sm text-muted-foreground">Total Sites</div>
+                <div className="flex items-center justify-center mb-2">
+                  <TrendingUp className="h-5 w-5 text-primary mr-2" />
+                  <span className="text-2xl font-bold">{totalStats.projects}</span>
+                </div>
+                <p className="text-sm text-muted-foreground">Total Projects</p>
               </CardContent>
             </Card>
-            <Card className="text-center glow-effect">
+            <Card className="card-enhanced text-center animate-in slide-in-from-bottom duration-500 delay-100">
               <CardContent className="p-4">
-                <div className="text-2xl font-bold text-primary">
-                  {sites.reduce((acc, site) => acc + site.totalProjects, 0)}
+                <div className="flex items-center justify-center mb-2">
+                  <TrendingUp className="h-5 w-5 text-green-500 mr-2" />
+                  <span className="text-2xl font-bold">{totalStats.investments}</span>
                 </div>
-                <div className="text-sm text-muted-foreground">Projects</div>
+                <p className="text-sm text-muted-foreground">Investments</p>
               </CardContent>
             </Card>
-            <Card className="text-center glow-effect">
+            <Card className="card-enhanced text-center animate-in slide-in-from-bottom duration-500 delay-200">
               <CardContent className="p-4">
-                <div className="text-2xl font-bold text-primary">
-                  {sites.reduce((acc, site) => acc + site.companies, 0)}
+                <div className="flex items-center justify-center mb-2">
+                  <Building className="h-5 w-5 text-purple-500 mr-2" />
+                  <span className="text-2xl font-bold">{totalStats.companies}</span>
                 </div>
-                <div className="text-sm text-muted-foreground">Companies</div>
+                <p className="text-sm text-muted-foreground">Companies</p>
               </CardContent>
             </Card>
-            <Card className="text-center glow-effect">
+            <Card className="card-enhanced text-center animate-in slide-in-from-bottom duration-500 delay-300">
               <CardContent className="p-4">
-                <div className="text-2xl font-bold text-primary">
-                  {sites.reduce((acc, site) => acc + site.investments, 0)}
+                <div className="flex items-center justify-center mb-2">
+                  <Briefcase className="h-5 w-5 text-orange-500 mr-2" />
+                  <span className="text-2xl font-bold">{totalStats.experiences}</span>
                 </div>
-                <div className="text-sm text-muted-foreground">Investments</div>
+                <p className="text-sm text-muted-foreground">Experiences</p>
               </CardContent>
             </Card>
           </div>
 
           {/* Site Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredSites.map((site, index) => (
-              <Card
-                key={site.id}
-                className="group hover:shadow-xl transition-all duration-500 hover:scale-105 cursor-pointer glow-effect animate-in slide-in-from-bottom duration-500"
-                style={{ animationDelay: `${index * 150}ms` }}
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      {site.type === "company" ? (
-                        <Building className="h-5 w-5 text-primary" />
-                      ) : (
-                        <User className="h-5 w-5 text-primary" />
-                      )}
-                      <CardTitle className="text-lg group-hover:text-primary transition-colors">{site.name}</CardTitle>
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
+            {filteredSites.map((site, index) => {
+              const IconComponent = site.icon
+              return (
+                <Card
+                  key={site.id}
+                  className="group hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer card-enhanced glow-effect animate-in slide-in-from-bottom duration-500"
+                  style={{ animationDelay: `${index * 150}ms` }}
+                >
+                  <CardHeader className="pb-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                          <IconComponent className="h-6 w-6 text-primary" />
+                        </div>
+                        <div>
+                          <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                            {site.name}
+                          </CardTitle>
+                          <Badge variant="secondary" className="mt-1">
+                            {site.theme}
+                          </Badge>
+                        </div>
+                      </div>
+                      <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                     </div>
-                    <Badge variant="secondary" className="text-xs">
-                      {site.theme}
-                    </Badge>
-                  </div>
-                  <CardDescription className="text-sm">{site.description}</CardDescription>
-                </CardHeader>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
+                      {site.title}
+                    </h3>
+                    <p className="text-muted-foreground mb-4 line-clamp-2">{site.description}</p>
 
-                <CardContent className="pt-0">
-                  {/* Quick Stats */}
-                  <div className="grid grid-cols-3 gap-2 mb-4 text-center">
-                    <div className="bg-muted/50 rounded-lg p-2">
-                      <div className="text-sm font-semibold text-primary">{site.totalProjects}</div>
-                      <div className="text-xs text-muted-foreground">Projects</div>
+                    {/* Site Stats */}
+                    <div className="grid grid-cols-4 gap-2 mb-4">
+                      <div className="text-center">
+                        <div className="text-lg font-semibold">{site.stats.projects}</div>
+                        <div className="text-xs text-muted-foreground">Projects</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-lg font-semibold text-green-500">{site.stats.investments}</div>
+                        <div className="text-xs text-muted-foreground">Investments</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-lg font-semibold text-purple-500">{site.stats.companies}</div>
+                        <div className="text-xs text-muted-foreground">Companies</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-lg font-semibold text-orange-500">{site.stats.experiences}</div>
+                        <div className="text-xs text-muted-foreground">Experience</div>
+                      </div>
                     </div>
-                    <div className="bg-muted/50 rounded-lg p-2">
-                      <div className="text-sm font-semibold text-primary">{site.companies}</div>
-                      <div className="text-xs text-muted-foreground">Companies</div>
-                    </div>
-                    <div className="bg-muted/50 rounded-lg p-2">
-                      <div className="text-sm font-semibold text-primary">{site.investments}</div>
-                      <div className="text-xs text-muted-foreground">Investments</div>
-                    </div>
-                  </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex space-x-2">
-                    <Link href={`/?site=${site.id}`} className="flex-1">
+                    <Link href={`/?site=${site.id}`}>
                       <Button className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                        <Globe className="h-4 w-4 mr-2" />
-                        Visit Site
-                        <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                        Explore Portfolio
+                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                       </Button>
                     </Link>
-                  </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
 
-                  {/* Domain Info */}
-                  {site.customDomain && (
-                    <div className="mt-3 p-2 bg-muted/30 rounded-lg">
-                      <div className="text-xs text-muted-foreground">Custom Domain:</div>
-                      <div className="text-sm font-mono text-primary">{site.customDomain}</div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
+          {/* Entity Quick Access */}
+          <div className="animate-in slide-in-from-bottom duration-700 delay-400">
+            <h3 className="text-2xl font-semibold mb-6 text-center gradient-text">Quick Access by Entity</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {Object.entries(entityConfigs).map(([key, config], index) => (
+                <Link key={key} href={`/?entity=${key}`}>
+                  <Card
+                    className="group hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer text-center card-enhanced glow-effect animate-in slide-in-from-bottom duration-500"
+                    style={{ animationDelay: `${(index + 4) * 100}ms` }}
+                  >
+                    <CardContent className="p-4">
+                      <div className="mb-3 group-hover:scale-110 transition-transform duration-300">
+                        {key === "srd" || key === "sanskrut-corp" || key === "sanskrut-ent" ? (
+                          <Building className="h-8 w-8 mx-auto text-primary" />
+                        ) : (
+                          <User className="h-8 w-8 mx-auto text-primary" />
+                        )}
+                      </div>
+                      <h4 className="font-semibold group-hover:text-primary transition-colors text-sm">
+                        {config.name}
+                      </h4>
+                      <p className="text-xs text-muted-foreground mt-1">{config.theme}</p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
           </div>
 
           {filteredSites.length === 0 && (
-            <div className="text-center py-12 animate-in fade-in duration-500">
-              <div className="text-6xl mb-4">🔍</div>
-              <h3 className="text-xl font-semibold mb-2">No sites found</h3>
-              <p className="text-muted-foreground mb-4">
-                Try adjusting your search terms or browse all available sites.
-              </p>
-              <Button onClick={() => setSearchTerm("")} variant="outline">
+            <div className="text-center py-12">
+              <p className="text-lg text-muted-foreground">No portfolios found matching your search.</p>
+              <Button variant="outline" onClick={() => setSearchTerm("")} className="mt-4">
                 Clear Search
               </Button>
             </div>
           )}
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="border-t mt-16 bg-muted/30">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground">
-              © 2025 Portfolio Universe. Built with React, Next.js and Tailwind CSS.
-            </p>
-            <div className="flex justify-center space-x-4 mt-4">
-              <Badge variant="outline">Multi-Site</Badge>
-              <Badge variant="outline">Dynamic Routing</Badge>
-              <Badge variant="outline">Custom Domains</Badge>
-              <Badge variant="outline">URL Parameters</Badge>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }

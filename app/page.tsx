@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useMemo } from "react"
 import { Moon, Sun, User, Building, TrendingUp, Briefcase } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import { useTheme } from "next-themes"
 import { useSearchParams } from "next/navigation"
-import { entityConfigs } from "@/lib/data"
+import { portfolioData, entityConfigs } from "@/lib/data"
 import { SRDSite } from "@/components/sites/srd-site"
 import { SanskrutCorpSite } from "@/components/sites/sanskrut-corp-site"
 import { SanskrutEnterprisesSite } from "@/components/sites/sanskrut-enterprises-site"
@@ -18,22 +18,6 @@ import { EnhancedPortfolioGrid } from "@/components/enhanced/enhanced-portfolio-
 import { EnhancedStatsCard } from "@/components/enhanced/enhanced-stats-card"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 
-// Move the domain logic outside of the context dependency
-function getDefaultSiteData() {
-  return {
-    id: "default",
-    name: "Portfolio System",
-    title: "Discover Projects & Companies",
-    description: "Explore our dynamic portfolio of investments, incubations, and professional experiences",
-    theme: "default",
-    totalProjects: 25,
-    investments: 8,
-    jobExperiences: 12,
-    companies: 5,
-    projects: [],
-  }
-}
-
 function PageContent() {
   const searchParams = useSearchParams()
   const { theme, setTheme } = useTheme()
@@ -42,10 +26,34 @@ function PageContent() {
   const siteParam = searchParams.get("site")
   const entityParam = searchParams.get("entity")
 
-  // If no site is determined, show the site selector
-  if (!siteParam && !entityParam) {
-    return <SiteSelector />
-  }
+  const filteredData = useMemo(() => {
+    if (!entityParam) return portfolioData
+
+    return portfolioData.filter((item) => {
+      const entityName = entityConfigs[entityParam as keyof typeof entityConfigs]?.name
+      if (entityName) {
+        return item.associations.some(
+          (person) =>
+            person.toLowerCase() === entityName.toLowerCase() || person.toLowerCase() === entityParam.toLowerCase(),
+        )
+      }
+      return true
+    })
+  }, [entityParam])
+
+  const currentEntity = entityParam ? entityConfigs[entityParam as keyof typeof entityConfigs] : null
+
+  // Calculate stats for enhanced display
+  const stats = useMemo(() => {
+    const data = currentEntity ? filteredData : portfolioData
+    return {
+      totalProjects: data.length,
+      investments: data.filter((item) => item.type === "Investment").length,
+      jobExperiences: data.filter((item) => item.type === "Job Experience").length,
+      incubations: data.filter((item) => item.type === "Incubation").length,
+      companies: data.filter((item) => item.type === "Company").length,
+    }
+  }, [filteredData, currentEntity])
 
   // Render the appropriate site component
   switch (siteParam) {
@@ -57,9 +65,9 @@ function PageContent() {
       return <SanskrutEnterprisesSite />
     case "srd":
       return <SRDSite />
+    case "selector":
+      return <SiteSelector />
     default:
-      const site = getDefaultSiteData()
-
       return (
         <div className="min-h-screen bg-background">
           {/* Enhanced Header */}
@@ -67,8 +75,10 @@ function PageContent() {
             <div className="container mx-auto px-4 py-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <h1 className="text-2xl font-bold gradient-text">{site.name}</h1>
-                  {entityParam && (
+                  <h1 className="text-2xl font-bold gradient-text">
+                    {currentEntity ? currentEntity.name : "Portfolio System"}
+                  </h1>
+                  {currentEntity && (
                     <Badge
                       variant="secondary"
                       className="flex items-center gap-1 animate-in slide-in-from-left duration-300"
@@ -78,7 +88,7 @@ function PageContent() {
                       ) : (
                         <User className="h-3 w-3" />
                       )}
-                      {entityConfigs[entityParam as keyof typeof entityConfigs]?.theme || "Entity"}
+                      {currentEntity.theme}
                     </Badge>
                   )}
                 </div>
@@ -100,33 +110,39 @@ function PageContent() {
           <main className="container mx-auto px-4 py-8">
             {/* Enhanced Hero Section */}
             <div className="text-center mb-12 animate-in slide-in-from-top duration-700">
-              <h2 className="text-4xl font-bold mb-4 gradient-text">{site.title}</h2>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">{site.description}</p>
+              <h2 className="text-4xl font-bold mb-4 gradient-text">
+                {currentEntity ? currentEntity.title : "Discover Projects & Companies"}
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                {currentEntity
+                  ? currentEntity.description
+                  : "Explore our dynamic portfolio of investments, incubations, and professional experiences"}
+              </p>
             </div>
 
             {/* Enhanced Stats Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
               <EnhancedStatsCard
                 title="Total Projects"
-                value={site.totalProjects}
+                value={stats.totalProjects}
                 icon={<TrendingUp className="h-4 w-4" />}
                 trend={{ value: 12, isPositive: true }}
               />
               <EnhancedStatsCard
                 title="Investments"
-                value={site.investments}
+                value={stats.investments}
                 icon={<TrendingUp className="h-4 w-4" />}
                 className="animate-in slide-in-from-left duration-500 delay-100"
               />
               <EnhancedStatsCard
                 title="Job Experiences"
-                value={site.jobExperiences}
+                value={stats.jobExperiences}
                 icon={<Briefcase className="h-4 w-4" />}
                 className="animate-in slide-in-from-left duration-500 delay-200"
               />
               <EnhancedStatsCard
                 title="Companies"
-                value={site.companies}
+                value={stats.companies}
                 icon={<Building className="h-4 w-4" />}
                 className="animate-in slide-in-from-left duration-500 delay-300"
               />
@@ -140,7 +156,7 @@ function PageContent() {
                   {Object.entries(entityConfigs).map(([key, config], index) => (
                     <Link key={key} href={`/?entity=${key}`}>
                       <Card
-                        className="group hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer text-center animate-in slide-in-from-bottom duration-500 glow-effect"
+                        className="group hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer text-center animate-in slide-in-from-bottom duration-500 glow-effect card-enhanced"
                         style={{ animationDelay: `${index * 100}ms` }}
                       >
                         <CardContent className="p-4">
@@ -163,10 +179,10 @@ function PageContent() {
 
             {/* Enhanced Portfolio Grid */}
             <div className="animate-in slide-in-from-bottom duration-700 delay-400">
-              <EnhancedPortfolioGrid entity={entityParam} initialData={site.projects} />
+              <EnhancedPortfolioGrid entity={entityParam} initialData={filteredData} />
             </div>
 
-            {site.projects.length === 0 && (
+            {filteredData.length === 0 && (
               <div className="text-center py-12 animate-in fade-in duration-500">
                 <p className="text-lg text-muted-foreground">No projects found</p>
                 <Link href="/">
@@ -181,7 +197,8 @@ function PageContent() {
             <div className="container mx-auto px-4 py-8">
               <div className="text-center">
                 <p className="text-sm text-muted-foreground">
-                  © 2025 {site.name}. Built with React, Next.js and Tailwind CSS.
+                  © 2025 {currentEntity ? currentEntity.name : "Portfolio System"}. Built with React, Next.js and
+                  Tailwind CSS.
                 </p>
               </div>
             </div>

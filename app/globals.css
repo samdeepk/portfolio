@@ -4,31 +4,26 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --background: 210 11% 8%;
+    --foreground: 210 11% 98%;
+    --card: 210 11% 12%;
+    --card-foreground: 210 11% 98%;
+    --popover: 210 11% 12%;
+    --popover-foreground: 210 11% 98%;
+    --primary: 210 100% 60%;
+    --primary-foreground: 210 11% 8%;
+    --secondary: 210 11% 16%;
+    --secondary-foreground: 210 11% 98%;
+    --muted: 210 11% 16%;
+    --muted-foreground: 210 11% 65%;
+    --accent: 210 11% 16%;
+    --accent-foreground: 210 11% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 11% 98%;
+    --border: 210 11% 20%;
+    --input: 210 11% 20%;
+    --ring: 210 100% 60%;
+    --radius: 0.75rem;
   }
 
   .dark {
@@ -38,7 +33,7 @@
     --card-foreground: 210 11% 98%;
     --popover: 210 11% 12%;
     --popover-foreground: 210 11% 98%;
-    --primary: 210 11% 98%;
+    --primary: 210 100% 60%;
     --primary-foreground: 210 11% 8%;
     --secondary: 210 11% 16%;
     --secondary-foreground: 210 11% 98%;
@@ -46,16 +41,11 @@
     --muted-foreground: 210 11% 65%;
     --accent: 210 11% 16%;
     --accent-foreground: 210 11% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 11% 98%;
     --border: 210 11% 20%;
     --input: 210 11% 20%;
-    --ring: 210 11% 98%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --ring: 210 100% 60%;
   }
 }
 
@@ -65,10 +55,64 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-/* Enhanced animations */
+/* Dark theme enhancements */
+@layer base {
+  body {
+    background-image: radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.01) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  .gradient-text {
+    @apply bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent;
+  }
+
+  .glow-effect {
+    @apply transition-all duration-300;
+  }
+
+  .glow-effect:hover {
+    @apply shadow-lg;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+  }
+
+  .card-enhanced {
+    @apply bg-card/80 backdrop-blur-sm border border-border/50;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .card-enhanced:hover {
+    @apply bg-card/90;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
+
+/* Animation keyframes */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -111,17 +155,6 @@
   }
 }
 
-@keyframes slide-in-from-right {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
 .animate-in {
   animation-fill-mode: both;
 }
@@ -142,11 +175,6 @@
   animation: slide-in-from-left 0.5s ease-out;
 }
 
-.slide-in-from-right {
-  animation: slide-in-from-right 0.5s ease-out;
-}
-
-/* Duration classes */
 .duration-300 {
   animation-duration: 300ms;
 }
@@ -159,7 +187,6 @@
   animation-duration: 700ms;
 }
 
-/* Delay classes */
 .delay-100 {
   animation-delay: 100ms;
 }
@@ -174,173 +201,4 @@
 
 .delay-400 {
   animation-delay: 400ms;
-}
-
-/* Enhanced card styles */
-.card {
-  @apply bg-card text-card-foreground rounded-lg border shadow-sm;
-  transition: all 0.3s ease;
-}
-
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-/* Gradient text effect */
-.gradient-text {
-  background: linear-gradient(135deg, hsl(var(--foreground)), hsl(var(--foreground) / 0.7));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Glow effects */
-.glow-effect {
-  transition: box-shadow 0.3s ease;
-}
-
-.glow-effect:hover {
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-}
-
-/* Loading spinner */
-.loading-spinner {
-  @apply animate-spin rounded-full border-2 border-gray-300 border-t-blue-600;
-}
-
-/* Responsive design helpers */
-@media (max-width: 768px) {
-  .container {
-    @apply px-4;
-  }
-
-  .grid-cols-2 {
-    @apply grid-cols-1;
-  }
-
-  .md\:grid-cols-3 {
-    @apply grid-cols-2;
-  }
-
-  .lg\:grid-cols-6 {
-    @apply grid-cols-3;
-  }
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: hsl(var(--background));
-}
-
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted));
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground));
-}
-
-/* Focus styles for accessibility */
-.focus\:ring-2:focus {
-  @apply ring-2 ring-ring ring-offset-2;
-}
-
-/* Button enhancements */
-.btn-primary {
-  @apply bg-primary text-primary-foreground hover:bg-primary/90;
-  transition: all 0.2s ease;
-}
-
-.btn-secondary {
-  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
-  transition: all 0.2s ease;
-}
-
-/* Badge styles */
-.badge {
-  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
-  transition: all 0.2s ease;
-}
-
-.badge-default {
-  @apply bg-primary text-primary-foreground hover:bg-primary/80;
-}
-
-.badge-secondary {
-  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
-}
-
-/* Enhanced form styles */
-.form-input {
-  @apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
-}
-
-/* Navigation styles */
-.nav-link {
-  @apply text-sm font-medium transition-colors hover:text-primary;
-}
-
-.nav-link.active {
-  @apply text-primary;
-}
-
-/* Card hover effects */
-.card-hover {
-  @apply transition-all duration-300 hover:shadow-lg hover:scale-105;
-}
-
-/* Text effects */
-.text-gradient {
-  @apply bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent;
-}
-
-/* Layout utilities */
-.section-padding {
-  @apply py-12 px-4;
-}
-
-.container-max {
-  @apply max-w-7xl mx-auto;
-}
-
-/* Animation utilities */
-.animate-bounce-slow {
-  animation: bounce 2s infinite;
-}
-
-.animate-pulse-slow {
-  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Dark mode specific enhancements */
-.dark .card {
-  background: hsl(var(--card) / 0.8);
-  backdrop-filter: blur(8px);
-  border: 1px solid hsl(var(--border) / 0.5);
-}
-
-.dark .card:hover {
-  background: hsl(var(--card) / 0.9);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-/* Noise texture overlay for dark theme */
-.dark body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.15) 1px, transparent 0);
-  background-size: 20px 20px;
-  pointer-events: none;
-  z-index: -1;
-  opacity: 0.3;
 }

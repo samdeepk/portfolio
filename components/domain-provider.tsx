@@ -1,54 +1,65 @@
 "use client"
 
-import type React from "react"
-import { createContext, useContext } from "react"
+import { createContext, useContext, type ReactNode } from "react"
+import type { DomainConfig } from "@/lib/domain-config"
 
-export interface DomainConfig {
-  domain: string
+interface DomainContextType {
   siteId: string
   siteName: string
-  theme: string
   primaryColor: string
+  secondaryColor: string
   favicon: string
   ogImage: string
+  customCSS?: string
 }
 
-const DomainContext = createContext<DomainConfig | null>(null)
+const DomainContext = createContext<DomainContextType | null>(null)
 
-export function DomainProvider({
-  children,
-  config,
-}: {
-  children: React.ReactNode
+interface DomainProviderProps {
+  children: ReactNode
   config?: DomainConfig
-}) {
-  // Provide a default config if none is provided
-  const defaultConfig: DomainConfig = {
-    domain: "localhost:3000",
+}
+
+export function DomainProvider({ children, config }: DomainProviderProps) {
+  // Provide default config if none is provided
+  const defaultConfig: DomainContextType = {
     siteId: "selector",
-    siteName: "Portfolio System",
-    theme: "default",
-    primaryColor: "#000000",
+    siteName: "Portfolio Ecosystem",
+    primaryColor: "slate",
+    secondaryColor: "gray",
     favicon: "/favicon.ico",
-    ogImage: "/placeholder.svg?height=630&width=1200",
+    ogImage: "/og-image.png",
   }
 
-  return <DomainContext.Provider value={config || defaultConfig}>{children}</DomainContext.Provider>
+  const contextValue = config
+    ? {
+        siteId: config.siteId,
+        siteName: config.siteName,
+        primaryColor: config.primaryColor,
+        secondaryColor: config.secondaryColor,
+        favicon: config.favicon,
+        ogImage: config.ogImage,
+        customCSS: config.customCSS,
+      }
+    : defaultConfig
+
+  return <DomainContext.Provider value={contextValue}>{children}</DomainContext.Provider>
 }
 
-export function useDomain(): DomainConfig {
+export function useDomain(): DomainContextType {
   const context = useContext(DomainContext)
-  // Return default config instead of throwing error
+
+  // Return default config if context is not available
   if (!context) {
     return {
-      domain: "localhost:3000",
       siteId: "selector",
-      siteName: "Portfolio System",
-      theme: "default",
-      primaryColor: "#000000",
+      siteName: "Portfolio Ecosystem",
+      primaryColor: "slate",
+      secondaryColor: "gray",
       favicon: "/favicon.ico",
-      ogImage: "/placeholder.svg?height=630&width=1200",
+      ogImage: "/og-image.png",
     }
   }
+
   return context
 }
