@@ -16,32 +16,39 @@ import { SandeepSite } from "@/components/sites/sandeep-site"
 import { SiteSelector } from "@/components/site-selector"
 import { EnhancedPortfolioGrid } from "@/components/enhanced/enhanced-portfolio-grid"
 import { EnhancedStatsCard } from "@/components/enhanced/enhanced-stats-card"
-import { useDomain } from "@/components/domain-provider"
-import { sites } from "@/lib/shared-data"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
+
+// Move the domain logic outside of the context dependency
+function getDefaultSiteData() {
+  return {
+    id: "default",
+    name: "Portfolio System",
+    title: "Discover Projects & Companies",
+    description: "Explore our dynamic portfolio of investments, incubations, and professional experiences",
+    theme: "default",
+    totalProjects: 25,
+    investments: 8,
+    jobExperiences: 12,
+    companies: 5,
+    projects: [],
+  }
+}
 
 function PageContent() {
   const searchParams = useSearchParams()
-  const domainConfig = useDomain()
   const { theme, setTheme } = useTheme()
 
-  // Get site from URL parameter or domain mapping
+  // Get site from URL parameter
   const siteParam = searchParams.get("site")
-  const siteId = siteParam || domainConfig.siteId
+  const entityParam = searchParams.get("entity")
 
   // If no site is determined, show the site selector
-  if (!siteId || siteId === "selector") {
-    return <SiteSelector />
-  }
-
-  // Find the site configuration
-  const site = sites.find((s) => s.id === siteId)
-  if (!site) {
+  if (!siteParam && !entityParam) {
     return <SiteSelector />
   }
 
   // Render the appropriate site component
-  switch (siteId) {
+  switch (siteParam) {
     case "sandeep":
       return <SandeepSite />
     case "sanskrut-corp":
@@ -51,6 +58,8 @@ function PageContent() {
     case "srd":
       return <SRDSite />
     default:
+      const site = getDefaultSiteData()
+
       return (
         <div className="min-h-screen bg-background">
           {/* Enhanced Header */}
@@ -59,17 +68,19 @@ function PageContent() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <h1 className="text-2xl font-bold gradient-text">{site.name}</h1>
-                  <Badge
-                    variant="secondary"
-                    className="flex items-center gap-1 animate-in slide-in-from-left duration-300"
-                  >
-                    {siteParam === "srd" || siteParam === "sanskrut-corp" || siteParam === "sanskrut-ent" ? (
-                      <Building className="h-3 w-3" />
-                    ) : (
-                      <User className="h-3 w-3" />
-                    )}
-                    {site.theme}
-                  </Badge>
+                  {entityParam && (
+                    <Badge
+                      variant="secondary"
+                      className="flex items-center gap-1 animate-in slide-in-from-left duration-300"
+                    >
+                      {entityParam === "srd" || entityParam === "sanskrut-corp" || entityParam === "sanskrut-ent" ? (
+                        <Building className="h-3 w-3" />
+                      ) : (
+                        <User className="h-3 w-3" />
+                      )}
+                      {entityConfigs[entityParam as keyof typeof entityConfigs]?.theme || "Entity"}
+                    </Badge>
+                  )}
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button
@@ -122,7 +133,7 @@ function PageContent() {
             </div>
 
             {/* Entity Navigation */}
-            {!siteParam && (
+            {!entityParam && (
               <div className="mb-12 animate-in slide-in-from-bottom duration-700 delay-200">
                 <h3 className="text-2xl font-semibold mb-6 text-center gradient-text">Browse by Person or Company</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -152,7 +163,7 @@ function PageContent() {
 
             {/* Enhanced Portfolio Grid */}
             <div className="animate-in slide-in-from-bottom duration-700 delay-400">
-              <EnhancedPortfolioGrid entity={siteParam} initialData={site.projects} />
+              <EnhancedPortfolioGrid entity={entityParam} initialData={site.projects} />
             </div>
 
             {site.projects.length === 0 && (

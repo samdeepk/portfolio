@@ -2,7 +2,16 @@
 
 import type React from "react"
 import { createContext, useContext } from "react"
-import type { DomainConfig } from "@/lib/domain-config"
+
+export interface DomainConfig {
+  domain: string
+  siteId: string
+  siteName: string
+  theme: string
+  primaryColor: string
+  favicon: string
+  ogImage: string
+}
 
 const DomainContext = createContext<DomainConfig | null>(null)
 
@@ -27,7 +36,7 @@ export function DomainProvider({
   return <DomainContext.Provider value={config || defaultConfig}>{children}</DomainContext.Provider>
 }
 
-export function useDomain() {
+export function useDomain(): DomainConfig {
   const context = useContext(DomainContext)
   // Return default config instead of throwing error
   if (!context) {
