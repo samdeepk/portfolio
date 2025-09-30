@@ -1,0 +1,484 @@
+openapi: 3.1.0
+info:
+  title: ChatCMS + Knowledge Graph + RAG API
+  version: 1.0.0
+  summary: >
+    Spec for a chat-driven CMS with Postgres-backed content nodes, tags, edges,
+    hybrid search (keyword + vector), and MCP-friendly tool endpoints.
+  contact:
+    name: Platform Team
+    email: platform@example.com
+servers:
+  - url: https://api.example.com
+    description: Production
+  - url: https://staging-api.example.com
+    description: Staging
+tags:
+  - name: Content
+    description: Create, update, validate, publish nodes (articles, blogs, people, companies, projects, assets)
+  - name: Graph
+    description: Edges between nodes and related-content queries
+  - name: Search
+    description: Keyword/vector hybrid retrieval and Ask endpoint
+  - name: System
+    description: Health, revalidate, webhooks
+
+paths:
+  /v1/content/propose:
+    post:
+      tags: [Content]
+      summary: Normalize a free-form draft into a structured Node (no persistence).
+      operationId: propose_node
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProposeRequest'
+      responses:
+        '200':
+          description: Proposed node with missing fields list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProposeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /v1/content/validate:
+    post:
+      tags: [Content]
+      summary: Validate a Node against schema, tags whitelist, slug rules.
+      operationId: validate_node
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Node' }
+      responses:
+        '200':
+          description: Validation result
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ValidationResult' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+  /v1/content/upsert:
+    post:
+      tags: [Content]
+      summary: Create or update a Node as draft. Always creates a new revision.
+      operationId: upsert_node
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Node' }
+      responses:
+        '200':
+          description: Upserted node metadata.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UpsertResult' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /v1/content/preview/{id}:
+    get:
+      tags: [Content]
+      summary: Render a preview of a draft node (HTML/MDX).
+      operationId: preview_render
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HTML preview
+          content:
+            text/html:
+              schema: { type: string }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /v1/content/publish/{id}:
+    post:
+      tags: [Content]
+      summary: Publish a node. Triggers indexing (keyword/vector) and web cache revalidation.
+      operationId: publish_node
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Publish result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  publishedAt: { type: string, format: date-time }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /v1/content/diff:
+    post:
+      tags: [Content]
+      summary: Show textual diff between two revisions of a node.
+      operationId: diff_node
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id, a, b]
+              properties:
+                id: { type: string, format: uuid }
+                a: { type: integer, minimum: 1, description: Revision number A }
+                b: { type: integer, minimum: 1, description: Revision number B }
+      responses:
+        '200':
+          description: Unified diff text
+          content:
+            text/plain:
+              schema: { type: string }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /v1/graph/edges:
+    post:
+      tags: [Graph]
+      summary: Add or update edges between nodes.
+      operationId: add_edges
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                edges:
+                  type: array
+                  items: { $ref: '#/components/schemas/Edge' }
+              required: [edges]
+      responses:
+        '200':
+          description: Upserted edge count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  upserted: { type: integer, minimum: 0 }
+
+  /v1/graph/related/{id}:
+    get:
+      tags: [Graph]
+      summary: Fetch related nodes by edge kind and hops.
+      operationId: get_related
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+        - in: query
+          name: kind
+          schema: { type: string, description: Edge kind filter (e.g., contributor, client, mentions) }
+        - in: query
+          name: maxHops
+          schema: { type: integer, minimum: 1, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+      responses:
+        '200':
+          description: Related nodes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nodes:
+                    type: array
+                    items: { $ref: '#/components/schemas/NodeSummary' }
+
+  /v1/search/list:
+    get:
+      tags: [Search]
+      summary: List nodes by tags, kinds, and site constraints (keyword only).
+      operationId: list_by
+      parameters:
+        - in: query
+          name: q
+          schema: { type: string, description: Keyword(s) }
+        - in: query
+          name: tags
+          schema:
+            type: array
+            items: { type: string }
+            style: form
+            explode: false
+            description: Comma-separated tag slugs
+        - in: query
+          name: kinds
+          schema:
+            type: array
+            items: { $ref: '#/components/schemas/NodeKind' }
+            style: form
+            explode: false
+        - in: query
+          name: site
+          schema: { type: string, description: Site slug to apply default filters }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 20, maximum: 100 }
+      responses:
+        '200':
+          description: Matching nodes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/NodeSummary' }
+
+  /v1/search/ask:
+    post:
+      tags: [Search]
+      summary: Ask a question over the corpus (hybrid keyword+vector with graph expansion). Returns answer with citations.
+      operationId: ask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AskRequest' }
+      responses:
+        '200':
+          description: Answer with citations
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AskResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+  /v1/system/revalidate:
+    post:
+      tags: [System]
+      summary: Trigger web cache/ISR revalidation by path or tag.
+      operationId: revalidate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paths:
+                  type: array
+                  items: { type: string }
+                tags:
+                  type: array
+                  items: { type: string }
+      responses:
+        '200':
+          description: Revalidation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  revalidated: { type: boolean }
+                  details: { type: string }
+
+  /v1/system/health:
+    get:
+      tags: [System]
+      summary: Health check.
+      operationId: health
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, enum: [ok] }
+
+components:
+  responses:
+    BadRequest:
+      description: Invalid input
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Conflict:
+      description: Resource conflict
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: Not authorized
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+  schemas:
+    NodeKind:
+      type: string
+      enum: [article, blog, person, company, project, asset]
+
+    Visibility:
+      type: string
+      enum: [public, unlisted, private]
+
+    Node:
+      type: object
+      additionalProperties: false
+      required: [kind, slug, title]
+      properties:
+        id: { type: string, format: uuid, nullable: true }
+        kind: { $ref: '#/components/schemas/NodeKind' }
+        slug: { type: string, pattern: '^[a-z0-9-]{3,}$' }
+        title: { type: string, minLength: 3 }
+        summary: { type: string }
+        body_mdx: { type: string, default: '' }
+        body_plain: { type: string, default: '' }
+        tags:
+          type: array
+          items: { type: string }
+          default: []
+        visibility: { $ref: '#/components/schemas/Visibility' }
+        seo:
+          type: object
+          additionalProperties: false
+          properties:
+            title: { type: string }
+            description: { type: string, maxLength: 160 }
+            ogImage: { type: string, format: uri }
+        metadata:
+          type: object
+          description: Arbitrary extra fields (locale, facet, etc.)
+        status:
+          type: string
+          enum: [draft, in_review, published]
+          default: draft
+        published_at: { type: string, format: date-time, nullable: true }
+        updated_at: { type: string, format: date-time, nullable: true }
+
+    NodeSummary:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        kind: { $ref: '#/components/schemas/NodeKind' }
+        slug: { type: string }
+        title: { type: string }
+        summary: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+
+    Edge:
+      type: object
+      required: [src, dst, kind]
+      properties:
+        src: { type: string, format: uuid }
+        dst: { type: string, format: uuid }
+        kind:
+          type: string
+          description: Edge type (contributor, client, owner, mentions, related)
+        weight:
+          type: number
+          default: 1.0
+        metadata:
+          type: object
+
+    ProposeRequest:
+      type: object
+      required: [prompt]
+      properties:
+        prompt: { type: string, description: Free-form description from chat }
+        defaults:
+          type: object
+          properties:
+            kind: { $ref: '#/components/schemas/NodeKind' }
+            tags:
+              type: array
+              items: { type: string }
+
+    ProposeResponse:
+      type: object
+      properties:
+        draft: { $ref: '#/components/schemas/Node' }
+        missing:
+          type: array
+          items: { type: string }
+
+    ValidationResult:
+      type: object
+      properties:
+        valid: { type: boolean }
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              path: { type: string }
+              message: { type: string }
+
+    UpsertResult:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        status: { type: string, enum: [draft, in_review, published] }
+        version: { type: integer, minimum: 1 }
+
+    AskRequest:
+      type: object
+      required: [q]
+      properties:
+        q: { type: string, description: Natural language question }
+        site: { type: string, description: Site slug to apply default filters }
+        tags:
+          type: array
+          items: { type: string }
+        kinds:
+          type: array
+          items: { $ref: '#/components/schemas/NodeKind' }
+        maxCitations: { type: integer, default: 5, minimum: 1, maximum: 10 }
+
+    AskResponse:
+      type: object
+      properties:
+        answer: { type: string }
+        citations:
+          type: array
+          items:
+            type: object
+            properties:
+              title: { type: string }
+              url: { type: string }
+              snippet: { type: string }
+
+    Error:
+      type: object
+      properties:
+        error: { type: string }
+        details: { type: string }
+        traceId: { type: string }
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
